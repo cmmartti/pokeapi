@@ -18,7 +18,7 @@ serve:
 	python manage.py runserver --settings=config.local
 
 test:
-	python manage.py test --settings=config.local
+	python manage.py test --settings=config.local --keepdb
 
 clean:
 	find . -type f -name '*.pyc' -delete

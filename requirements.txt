@@ -9,10 +9,13 @@ django-discover-runner==0.4
 django-imagekit==4.0.1
 django-redis==4.8.0
 django-cachalot==1.5.0
+django-cursor-pagination==0.1.2
 django-tastypie==0.14.0
 django-markdown-deux==1.0.5
 djangorestframework==3.6.4
 drf-ujson==1.2.0
+graphene==2.0
+graphene-django==2.0
 gunicorn==19.4.5
 markdown2==2.3.4
 mimeparse==0.1.3

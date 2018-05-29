@@ -117,6 +117,7 @@ CUSTOM_APPS = (
     'tastypie',
     'pokemon',
     'pokemon_v2',
+    'pokemon_graphql',
     'hits',
     'alerts',
 )
@@ -132,7 +133,8 @@ INSTALLED_APPS = (
     'corsheaders',
     'rest_framework',
     'markdown_deux',
-    'cachalot'
+    'cachalot',
+    'graphene_django',
 ) + CUSTOM_APPS
 
 
@@ -198,3 +200,9 @@ else:
         "secret": STRIPE_SECRET_KEY,
         "publishable": STRIPE_PUBLISHABLE_KEY
     }
+
+GRAPHENE = {
+    'MIDDLEWARE': [
+        'pokemon_graphql.middleware.LoaderMiddleware'
+    ],
+}

@@ -6,10 +6,13 @@ from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic import TemplateView
+from graphene_django.views import GraphQLView
 
 from pokemon import urls as pokemon_urls
 
 from pokemon_v2 import urls as pokemon_v2_urls
+
+from pokemon_graphql.schema import schema
 
 # need to make sure v2 urls resolve last so angular routes have control
 # v2 = [ url(r'^', include(pokemon_v2_urls)) ]
@@ -52,5 +55,7 @@ urlpatterns = [
     url(r'^', include(pokemon_urls)),
 
     url(r'^', include(pokemon_v2_urls)),
+
+    url(r'^graphql', GraphQLView.as_view(graphiql=True, schema=schema)),
 
     ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)  # + v2
