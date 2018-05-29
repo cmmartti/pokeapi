@@ -269,7 +269,7 @@ class Query(ObjectType):
         return getConnection(q, VersionConnection, **kwargs)
 
     def resolve_version_groups(self, info, **kwargs):
-        q = models.VersionGroup.objects.all()
+        q = models.VersionGroup.objects.all().order_by('order')
         if "name" in kwargs: q = q.filter(name=kwargs["name"])
         return getConnection(q, VersionGroupConnection, **kwargs)
 

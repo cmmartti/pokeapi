@@ -49,7 +49,7 @@ class QueryDebugMiddleware(object):
                         string += line
 
                 # Remove quotation marks
-                string = string.replace(""", "")
+                string = string.replace('"', "")
 
                 # Put each select clause on its own line
                 regex = re.compile("(, )(?=.*\n*FROM)")

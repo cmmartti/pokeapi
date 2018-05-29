@@ -41,14 +41,12 @@ def getPage(
 
     paginator = CursorPaginator(query_set, ordering=ordering + ("id", ))
     page = paginator.page(**args)
-    end_cursor = None
-    start_cursor = None
 
     return Page(
         data=page,
         page_info=PageInfo(
-            start_cursor=None,
-            end_cursor=None,
+            start_cursor=paginator.cursor(page[0]),
+            end_cursor=paginator.cursor(page[-1]),
             has_previous_page=page.has_previous,
             has_next_page=page.has_next
         ),
