@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from graphql_relay.connection.connectiontypes import Edge
-from graphene import ID, Int, String, Boolean, Field, List
+from graphene import ID, Int, String, Boolean, Field, List, Enum
 from graphene import ObjectType, Interface, Schema, relay
+from graphene import InputObjectType, Argument, InputField
 
 from .loader_key import LoaderKey
 from .connections import getConnection
@@ -42,6 +43,29 @@ class Name(ObjectType):
         return info.context.loaders.language.load(self.language_id)
 
 
+# Field Argument Types
+class OrderDirection(Enum):
+    ASC = "asc"
+    DESC = "desc"
+
+    @property
+    def description(self):
+        if self == OrderDirection.ASC:
+            return "Specifies an ascending order for a given orderBy argument."
+        if self == OrderDirection.DESC:
+            return "Specifies an descending order for a given orderBy argument."
+
+
+class Order(InputObjectType):
+    """Base ordering options for connections."""
+    direction = OrderDirection(description="The ordering direction.", required=True)
+
+
+class Where(InputObjectType):
+    """Base filtering options for connections."""
+    name = String(description="The full name of a resource.")
+
+
 #######################################
 class Language(ObjectType):
     """Languages for translations of resource information."""
@@ -76,6 +100,24 @@ class Language(ObjectType):
 class LanguageConnection(relay.Connection):
     class Meta:
         node = Language
+
+
+class LanguageOrderField(Enum):
+    """Properties by which language connections can be ordered."""
+    NAME = "name"
+
+    @property
+    def description(self):
+        if self == LanguageOrderField.NAME:
+            return "Order languages by name."
+
+
+class LanguageOrder(Order):
+    """Ordering options for language connections."""
+    field = LanguageOrderField(
+        description="The field to order languages by.",
+        required=True
+    )
 
 
 class LanguageName(ObjectType):
@@ -136,6 +178,29 @@ class GenerationConnection(relay.Connection):
         node = Generation
 
 
+class GenerationOrderField(Enum):
+    """Properties by which generation connections can be ordered."""
+    NAME = "name"
+
+    @property
+    def description(self):
+        if self == GenerationOrderField.NAME:
+            return "Order generations by name."
+
+
+class GenerationOrder(Order):
+    """Ordering options for generation connections."""
+    field = GenerationOrderField(
+        description="The field to order generations by.",
+        required=True
+    )
+
+
+class GenerationWhere(Where):
+    """Filtering options for generation connections."""
+    pass
+
+
 class GenerationName(Name):
     class Meta:
         interfaces = (RelayNode, )
@@ -189,6 +254,24 @@ class VersionName(Name):
         return info.context.loaders.versionname.load(id)
 
 
+class VersionOrderField(Enum):
+    """Properties by which version connections can be ordered."""
+    NAME = "name"
+
+    @property
+    def description(self):
+        if self == VersionOrderField.NAME:
+            return "Order version groups by name."
+
+
+class VersionOrder(Order):
+    """Ordering options for version connections."""
+    field = VersionOrderField(
+        description="The field to order versions by.",
+        required=True
+    )
+
+
 #######################################
 class VersionGroup(ObjectType):
     """Version groups categorize highly similar versions of the games."""
@@ -225,6 +308,27 @@ class VersionGroupConnection(relay.Connection):
         node = VersionGroup
 
 
+class VersionGroupOrderField(Enum):
+    """Properties by which version group connections can be ordered."""
+    ORDER = "order"
+    NAME = "name"
+
+    @property
+    def description(self):
+        if self == VersionGroupOrderField.ORDER:
+            return "Order version groups by standard order."
+        if self == VersionGroupOrderField.NAME:
+            return "Order version groups by name."
+
+
+class VersionGroupOrder(Order):
+    """Ordering options for version group connections."""
+    field = VersionGroupOrderField(
+        description="The field to order version groups by.",
+        required=True
+    )
+
+
 #######################################
 # Root Query
 
@@ -235,42 +339,38 @@ class Query(ObjectType):
     languages = relay.ConnectionField(
         LanguageConnection,
         description="A list of languages used for translations of resource information.",
-        name=String()
+        where=Argument(Where), order_by=Argument(LanguageOrder)
     )
     generations = relay.ConnectionField(
         GenerationConnection,
         description="A list of generations (groupings of games based on the Pokémon they include).",
-        name=String()
+        where=Argument(Where), order_by=Argument(GenerationOrder)
     )
     versions = relay.ConnectionField(
         VersionConnection,
         description="A list of versions of the games, e.g., Red, Blue or Yellow.",
-        name=String()
+        where=Argument(Where), order_by=Argument(VersionOrder)
     )
     version_groups = relay.ConnectionField(
         VersionGroupConnection,
         description="A list of version groups (highly similar versions of the games).",
-        name=String()
+        where=Argument(Where), order_by=Argument(VersionGroupOrder)
     )
 
     def resolve_languages(self, info, **kwargs):
         q = models.Language.objects.all()
-        if "name" in kwargs: q = q.filter(name=kwargs["name"])
         return getConnection(q, LanguageConnection, **kwargs)
 
     def resolve_generations(self, info, **kwargs):
         q = models.Generation.objects.all()
-        if "name" in kwargs: q = q.filter(name=kwargs["name"])
         return getConnection(q, GenerationConnection, **kwargs)
 
     def resolve_versions(self, info, **kwargs):
         q = models.Version.objects.all()
-        if "name" in kwargs: q = q.filter(name=kwargs["name"])
         return getConnection(q, VersionConnection, **kwargs)
 
     def resolve_version_groups(self, info, **kwargs):
-        q = models.VersionGroup.objects.all().order_by('order')
-        if "name" in kwargs: q = q.filter(name=kwargs["name"])
+        q = models.VersionGroup.objects.all()
         return getConnection(q, VersionGroupConnection, **kwargs)
 
 

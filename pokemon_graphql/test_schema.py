@@ -3,6 +3,7 @@ from base64 import b64encode
 from collections import OrderedDict
 import django.test
 import graphene
+from graphene import Context
 from graphene.test import Client
 from graphql_relay import to_global_id as get_id
 
@@ -33,12 +34,8 @@ def to_dict(ordered_dict):
 
 
 def encode_cursor(position):
-    position = str(position)
-    return b64encode(position.encode("ascii")).decode("ascii")
+    return b64encode("|".join(position).encode('ascii')).decode('ascii')
 
-
-class Context(object):
-    pass
 
 args = {
     "middleware": [LoaderMiddleware()],
@@ -46,14 +43,13 @@ args = {
 }
 
 
-
 # TESTS
 # In order to not go down the rabbit-hole, only test first-level resolvers in these tests, meaning don't request non-scalar fields of fields. Those are invidually tested anyway, so no point in making the tests unnecessarily complex.
 
 class GraphQLTests(django.test.TestCase, APIData):
 
-    # Pagination
-    def test_pagination(self):
+    # Pagination and Ordering
+    def test_pagination_and_ordering(self):
         language1 = self.setup_language_data(name="lang1")
         language2 = self.setup_language_data(name="lang2")
         language3 = self.setup_language_data(name="lang3")
@@ -68,15 +64,7 @@ class GraphQLTests(django.test.TestCase, APIData):
 
         # First 3 after 4
         executed = client.execute(
-            query = '''
-            query {
-                languages(first: 3, after: "%s") {
-                    edges {
-                        node {id name}
-                    }
-                }
-            }
-            ''' % encode_cursor(language4.id),
+            '''query {languages(first: 3, after: "%s") {edges {node {id name}}}}''' % encode_cursor((str(language4.id), )),
             **args
         )
         expected = {
@@ -101,17 +89,40 @@ class GraphQLTests(django.test.TestCase, APIData):
         }
         self.assertEqual(executed, expected)
 
-        # Last 2
+        # First 3 after 4 ordered by name descending
         executed = client.execute(
             '''
-            query {
-                languages(last: 2) {
-                    edges {
-                        node {id name}
-                    }
+            query {languages(
+                first: 3, after: "%s", orderBy: {field: NAME, direction: DESC}
+            ) {edges {node {id name}}}}
+            ''' % encode_cursor((language6.name, str(language6.id) )),
+            **args
+        )
+        expected = {
+            "data": {
+                "languages": {
+                    "edges": [
+                        {"node": {
+                            "id": get_id("Language", language5.id),
+                            "name": language5.name,
+                        }},
+                        {"node": {
+                            "id": get_id("Language", language4.id),
+                            "name": language4.name,
+                        }},
+                        {"node": {
+                            "id": get_id("Language", language3.id),
+                            "name": language3.name,
+                        }},
+                    ]
                 }
             }
-            ''',
+        }
+        self.assertEqual(executed, expected)
+
+        # Last 2
+        executed = client.execute(
+            '''query {languages(last: 2) {edges {node {id name}}}}''',
             **args
         )
         expected = {
@@ -141,7 +152,7 @@ class GraphQLTests(django.test.TestCase, APIData):
         executed = client.execute(
             '''
             query {
-                languages(first: 1, name: "base lang") {
+                languages(first: 1, where: {name: "base lang"}) {
                     edges {
                         node {
                             id name official iso639 iso3166
@@ -193,7 +204,7 @@ class GraphQLTests(django.test.TestCase, APIData):
         client = Client(schema)
         executed = client.execute('''
             query {
-                generations(first: 1, name: "base gen") {
+                generations(first: 1, where: {name: "base gen"}) {
                     edges {
                         node {
                             id name
@@ -243,7 +254,7 @@ class GraphQLTests(django.test.TestCase, APIData):
         client = Client(schema)
         executed = client.execute('''
             query {
-                versions(first: 1, name: "base ver") {
+                versions(first: 1, where: {name: "base ver"}) {
                     edges {
                         node {
                             id name
@@ -297,7 +308,7 @@ class GraphQLTests(django.test.TestCase, APIData):
         client = Client(schema)
         executed = client.execute('''
             query {
-                versionGroups(first: 1, name: "base ver grp") {
+                versionGroups(first: 1, where: {name: "base ver grp"}) {
                     edges {
                         node {
                             id name order

@@ -19,28 +19,40 @@ def getPage(
     last=None,
     after=None,
     before=None,
-    ordering=(),
-    **kwargs
+    order_by=None,
+    where=None
 ):
-    if not ordering: ordering = ()
-
     if first and last:
-        raise GraphQLError("You must provide either `first` or `last` values (not both) to properly paginate `%s`." % connection_name)
+        raise GraphQLError("You must provide either `first` or `last` values (not both) to properly paginate `{0}`.".format(connection_name))
     if (first and before) or (last and after):
-        raise GraphQLError("You must provide either `first`\`after` or `last`\`before` values to properly paginate `%s`." % connection_name)
+        raise GraphQLError("You must provide either `first`\`after` or `last`\`before` values to properly paginate `{0}`.".format(connection_name))
     if (first and first < 0)  or (last and last < 0):
-        raise GraphQLError("You must provide a positive paging `limit` value to properly paginate `%s`." % connection_name)
+        raise GraphQLError("You must provide a positive paging `limit` value to properly paginate `{0}`.".format(connection_name))
     if not first and not last:
-        raise GraphQLError("You must provide a `first` or `last` value to properly paginate `%s`." % connection_name)
+        raise GraphQLError("You must provide a `first` or `last` value to properly paginate `{0}`.".format(connection_name))
 
-    args = {}
-    if first: args["first"] = first
-    if last: args["last"] = last
-    if after: args["after"] = after
-    if before: args["before"] = before
+    # Layer the ordering, with `id` always at the bottom to ensure unique cursors
+    reverse = False
+    ordering = []
+    if order_by:
+        field = order_by['field']
+        reverse = (order_by['direction'] == 'desc')
+        ordering.append(field)
+    ordering.append('id')
 
-    paginator = CursorPaginator(query_set, ordering=ordering + ("id", ))
-    page = paginator.page(**args)
+    if reverse:
+        ordering = [("-" + o) for o in ordering]
+
+    # Filter by the arguments in `where`
+    if where:
+        for arg, value in where.iteritems():
+            query_set = query_set.filter(**{arg: value})
+
+
+    # TODO: Catch incorrect cursor-related errors (cursors change depending on the order_by argument)
+
+    paginator = CursorPaginator(query_set, ordering=ordering)
+    page = paginator.page(first=first, last=last, after=after, before=before)
 
     return Page(
         data=page,
