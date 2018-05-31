@@ -54,11 +54,19 @@ def getPage(
     paginator = CursorPaginator(query_set, ordering=ordering)
     page = paginator.page(first=first, last=last, after=after, before=before)
 
+    # If there are no results, there can be no cursor
+    if page:
+        start_cursor = paginator.cursor(page[0])
+        end_cursor = paginator.cursor(page[-1]),
+    else:
+        start_cursor = None
+        end_cursor = None
+
     return Page(
         data=page,
         page_info=PageInfo(
-            start_cursor=paginator.cursor(page[0]),
-            end_cursor=paginator.cursor(page[-1]),
+            start_cursor=start_cursor,
+            end_cursor=end_cursor,
             has_previous_page=page.has_previous,
             has_next_page=page.has_next
         ),
@@ -66,10 +74,18 @@ def getPage(
     )
 
 
-def getConnection(query_set, connection_type, **kwargs):
+def getConnection(query_set, connection_type, get_node_fn=None, **kwargs):
     page = getPage(query_set, connection_type.__name__, **kwargs)
     edges = []
     for item in page.data:
-        edges.append(Edge(node=item, cursor=page.get_cursor(item)))
+        if get_node_fn:
+            node = get_node_fn(item)
+        else:
+            node = item
+        edges.append(Edge(node=node, cursor=page.get_cursor(item)))
 
-    return connection_type(edges=edges, page_info=page.page_info)
+    return connection_type(
+        totalCount=query_set.count(),
+        edges=edges,
+        page_info=page.page_info
+    )

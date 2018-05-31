@@ -10,12 +10,7 @@ DATABASES = {
         'PORT': '',
         'CONN_MAX_AGE': 30
     },
-
-    ## Use this if you'd rather use SQLite (but slow--building the database will take all night)
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': os.path.join(PROJECT_ROOT, 'db.sqlite3'),
-    # },
+    # SQLite is not supported (doesn't have features required by cursor_pagination)
 }
 
 CACHES = {
@@ -51,7 +46,7 @@ LOGGING = {
 
 if DEBUG:
     # Log each db query to the console for debugging
-    # MIDDLEWARE_CLASSES = ('config.middleware.QueryDebugMiddleware',) + MIDDLEWARE_CLASSES
+    MIDDLEWARE_CLASSES = ('config.middleware.QueryDebugMiddleware',) + MIDDLEWARE_CLASSES
 
     # Log the number of queries and the total run time to the console
     MIDDLEWARE_CLASSES = ('config.middleware.QueryCountDebugMiddleware',) + MIDDLEWARE_CLASSES

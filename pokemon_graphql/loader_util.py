@@ -108,7 +108,7 @@ def get_relations_via_map(keys, get_query_set_fn, id_attr, map_attr):
                     # Check each item in the map
                     # Note: .all() is a Django query set method
                     for mapped_item in getattr(item, map_attr).all():
-                        if not hasattr(item, id_attr):
+                        if not hasattr(mapped_item, id_attr):
                             raise ValueError('%s object has no id_attr %s' % (item, id_attr))
 
                         # Does it match?
