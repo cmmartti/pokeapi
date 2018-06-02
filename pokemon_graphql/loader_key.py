@@ -2,8 +2,10 @@ from collections import namedtuple
 
 class LoaderKey(object):
     """
-	A hashable, immutable key identifier for use in dataloaders. To use, create a LoaderKey object from a unique `id` and any other optional named kwargs.
-	The `id` can be accessed using the `id` attribute, and the arguments using the `args` attribute (e.g. `loader_key_obj.args.colour`).
+	A hashable, immutable key identifier for use in dataloaders. To use, create a
+    LoaderKey object from a unique `id` and any other optional named kwargs. The `id`
+    can be accessed using the `id` attribute, and the arguments using the `args`
+    attribute (e.g. `loader_key_obj.args.arg1`).
 	"""
 
     def __init__(self, id, **args):

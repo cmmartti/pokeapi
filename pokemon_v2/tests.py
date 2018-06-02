@@ -2161,8 +2161,7 @@ class APIData():
 
 
 # Tests
-# class APITests(APIData, APITestCase):
-class APITests(APIData):
+class APITests(APIData, APITestCase):
 
     """
     Gender Tests

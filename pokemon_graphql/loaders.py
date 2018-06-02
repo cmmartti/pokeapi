@@ -213,7 +213,7 @@ class GenerationByRegionLoader(DataLoader):
 #######################################
 class EncounterWithEncounterSlotLoader(DataLoader):
     def batch_load_fn(self, keys):
-        q = Encounter.objects.filter(id__in=ids)
+        q = Encounter.objects.filter(id__in=keys)
         q = q.select_related('encounter_slot')
         results = divide_by_key(
             keys, q, lambda key, obj: str(obj.id) == str(key)

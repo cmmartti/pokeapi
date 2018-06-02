@@ -49,7 +49,8 @@ def getPage(
             query_set = query_set.filter(**{arg: value})
 
 
-    # TODO: Catch incorrect cursor-related errors (cursors change depending on the order_by argument)
+    # TODO: Catch incorrect cursor-related errors (the structure of a cursor changes
+    # depending on the order_by argument, so passing in an invalid cursor will fail).
 
     paginator = CursorPaginator(query_set, ordering=ordering)
     page = paginator.page(first=first, last=last, after=after, before=before)
