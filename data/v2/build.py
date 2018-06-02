@@ -39,9 +39,7 @@ imageDir = os.getcwd() + '/data/v2/sprites/'
 resourceImages = []
 for root, dirs, files in os.walk(imageDir):
     for file in files:
-        image_path = os.path.join(root.replace(imageDir, ""), file)
-        image_path = image_path.replace("\\", "/") # convert Windows-style path to Unix
-        resourceImages.append(image_path)
+        resourceImages.append(os.path.join(root.replace(imageDir, ""), file))
 
 
 mediaDir = '/media/sprites/{0}'
@@ -657,7 +655,7 @@ def build_items():
             model.save()
 
 
-    # clear_table(Item)
+    clear_table(Item)
     clear_table(ItemSprites)
     data = load_data('items.csv')
 
