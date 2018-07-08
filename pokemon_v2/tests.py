@@ -276,6 +276,18 @@ class APIData():
 
         return item_attribute
 
+
+    @classmethod
+    def setup_item_attribute_map_data(self, item, item_attribute):
+
+        item_attribute_map = ItemAttributeMap(
+            item=item,
+            item_attribute=item_attribute
+          )
+        item_attribute_map.save()
+
+        return item_attribute_map
+
     @classmethod
     def setup_item_attribute_name_data(self, item_attribute, name='itm attr nm'):
 
@@ -733,6 +745,17 @@ class APIData():
 
         return growth_rate_description
 
+    def setup_experience_data(self, growth_rate, level=10, experience=3000):
+
+        experience = Experience(
+            growth_rate=growth_rate,
+            level=level,
+            experience=experience
+        )
+        experience.save()
+
+        return experience
+
     # Location Data
     @classmethod
     def setup_location_data(self, region=None, name='lctn'):
@@ -843,6 +866,16 @@ class APIData():
         return type_name
 
     @classmethod
+    def setup_type_efficacy_data(self, damage_type, target_type, damage_factor):
+        type_efficacy = TypeEfficacy(
+            damage_type=damage_type,
+            target_type=target_type,
+            damage_factor=damage_factor
+        )
+        type_efficacy.save()
+        return type_efficacy
+
+    @classmethod
     def setup_type_game_index_data(self, type, game_index=0):
 
         generation = self.setup_generation_data(
@@ -856,6 +889,20 @@ class APIData():
         type_game_index.save()
 
         return type_game_index
+
+    # Machine Data
+    @classmethod
+    def setup_machine_data(self, item=None, move=None, version_group=None, machine_number=1):
+
+        machine = Machine.objects.create(
+            item=item,
+            move=move,
+            version_group=version_group,
+            machine_number=machine_number
+        )
+        machine.save()
+
+        return machine
 
     # Move Data
     @classmethod
@@ -1645,7 +1692,7 @@ class APIData():
             has_gender_differences=has_gender_differences,
             growth_rate=growth_rate,
             forms_switchable=forms_switchable,
-            order=forms_switchable
+            order=order
         )
         pokemon_species.save()
 
@@ -1771,6 +1818,24 @@ class APIData():
         pokemon_form.save()
 
         return pokemon_form
+
+    @classmethod
+    def setup_pokemon_form_name_data(
+        self, pokemon_form, name='pkmn frm name', pokemon_name="pkmn frm pkmn name"
+    ):
+
+        language = self.setup_language_data(
+            name='lang for '+name)
+
+        pokemon_form_name = PokemonFormName.objects.create(
+            pokemon_form=pokemon_form,
+            language=language,
+            name=name,
+            pokemon_name=pokemon_name,
+        )
+        pokemon_form_name.save()
+
+        return pokemon_form_name
 
     @classmethod
     def setup_pokemon_ability_data(self, pokemon, ability=None, is_hidden=False, slot=1):
@@ -2047,7 +2112,7 @@ class APIData():
     @classmethod
     def setup_encounter_condition_value_map_data(self, encounter, encounter_condition_value):
 
-        encounter_condition_value_map = EncounterConditionValue.objects.create(
+        encounter_condition_value_map = EncounterConditionValueMap.objects.create(
             encounter=encounter,
             encounter_condition_value=encounter_condition_value
         )
@@ -2565,7 +2630,7 @@ class APITests(APIData, APITestCase):
 
     def test_item_fling_effect_api(self):
 
-        # item category data
+        # item fling effect data
         item_fling_effect = self.setup_item_fling_effect_data(name='base itm flng efct')
         item_fling_effect_effect_text = self.setup_item_fling_effect_effect_text_data(
             item_fling_effect, effect='base itm flng efct nm')
@@ -4185,17 +4250,21 @@ class APITests(APIData, APITestCase):
         self.assertEqual(
             response.data['held_items'][0]['version_details'][0]['version']['url'],
             '{}{}/version/{}/'.format(test_host, api_v2, pokemon_item.version.pk))
+
         # move params -- Make sure that we only got one move back,
         # but that we got all of the distinct version group and learn
         # level values. (See issue #85)
+
         # Number of Moves
         expected = 1
         actual = len(response.data['moves'])
         self.assertEqual(expected, actual)
+
         # Move name
         expected = pokemon_moves[0].move.name
         actual = response.data['moves'][0]['move']['name']
         self.assertEqual(expected, actual)
+
         # Move URL
         expected = '{}{}/move/{}/'.format(
             test_host,
@@ -4203,20 +4272,24 @@ class APITests(APIData, APITestCase):
             pokemon_moves[0].move.pk)
         actual = response.data['moves'][0]['move']['url']
         self.assertEqual(expected, actual)
+
         # Numbver of version groups
         expected = len(pokemon_moves)
         actual = len(response.data['moves'][0]['version_group_details'])
         self.assertEqual(expected, actual)
         for i in range(0, len(pokemon_moves)):
             version = response.data['moves'][0]['version_group_details'][i]
+
             # Learn Level
             expected = pokemon_moves[i].level
             actual = version['level_learned_at']
             self.assertEqual(expected, actual)
+
             # Version Group Name
             expected = pokemon_moves[i].version_group.name
             actual = version['version_group']['name']
             self.assertEqual(expected, actual)
+
             # Version Group URL
             expected = '{}{}/version-group/{}/'.format(
                 test_host,
@@ -4224,10 +4297,12 @@ class APITests(APIData, APITestCase):
                 pokemon_moves[i].version_group.pk)
             actual = version['version_group']['url']
             self.assertEqual(expected, actual)
+
             # Learn Method Name
             expected = pokemon_moves[i].move_learn_method.name
             actual = version['move_learn_method']['name']
             self.assertEqual(expected, actual)
+
             # Learn Method URL
             expected = '{}{}/move-learn-method/{}/'.format(
                 test_host,
@@ -4235,6 +4310,7 @@ class APITests(APIData, APITestCase):
                 pokemon_moves[i].move_learn_method.pk)
             actual = version['move_learn_method']['url']
             self.assertEqual(expected, actual)
+
         # game indices params
         self.assertEqual(
             response.data['game_indices'][0]['game_index'],
@@ -4245,11 +4321,13 @@ class APITests(APIData, APITestCase):
         self.assertEqual(
             response.data['game_indices'][0]['version']['url'],
             '{}{}/version/{}/'.format(test_host, api_v2, pokemon_game_index.version.pk))
+
         # form params
         self.assertEqual(response.data['forms'][0]['name'], pokemon_form.name)
         self.assertEqual(
             response.data['forms'][0]['url'],
             '{}{}/pokemon-form/{}/'.format(test_host, api_v2, pokemon_form.pk))
+
         # sprite params
         self.assertEqual(
             response.data['sprites']['front_default'],
@@ -4373,17 +4451,20 @@ class APITests(APIData, APITestCase):
 
         # base params
         self.assertEqual(response.data['id'], evolution_chain.pk)
+
         # baby trigger params
         self.assertEqual(response.data['baby_trigger_item']['name'], baby_trigger_item.name)
         self.assertEqual(
             response.data['baby_trigger_item']['url'],
             '{}{}/item/{}/'.format(test_host, api_v2, baby_trigger_item.pk))
+
         # baby params
         self.assertEqual(baby_data['is_baby'], baby.is_baby)
         self.assertEqual(baby_data['species']['name'], baby.name)
         self.assertEqual(
             baby_data['species']['url'],
             '{}{}/pokemon-species/{}/'.format(test_host, api_v2, baby.pk))
+
         # basic params
         self.assertEqual(basic_data['is_baby'], basic.is_baby)
         self.assertEqual(basic_data['species']['name'], basic.name)
@@ -4396,6 +4477,7 @@ class APITests(APIData, APITestCase):
         self.assertEqual(
             basic_data['evolution_details'][0]['location']['url'],
             '{}{}/location/{}/'.format(test_host, api_v2, basic_location.pk))
+
         # stage one params
         self.assertEqual(stage_one_data['is_baby'], stage_one.is_baby)
         self.assertEqual(stage_one_data['species']['name'], stage_one.name)
@@ -4409,6 +4491,7 @@ class APITests(APIData, APITestCase):
         self.assertEqual(
             stage_one_data['evolution_details'][0]['held_item']['url'],
             '{}{}/item/{}/'.format(test_host, api_v2, stage_one_held_item.pk))
+
         # stage two first params
         self.assertEqual(stage_two_first_data['is_baby'], stage_two_first.is_baby)
         self.assertEqual(stage_two_first_data['species']['name'], stage_two_first.name)
@@ -4424,6 +4507,7 @@ class APITests(APIData, APITestCase):
         self.assertEqual(
             stage_two_first_data['evolution_details'][0]['known_move']['url'],
             '{}{}/move/{}/'.format(test_host, api_v2, stage_two_first_known_move.pk))
+
         # stage two second params
         self.assertEqual(stage_two_second_data['is_baby'], stage_two_second.is_baby)
         self.assertEqual(stage_two_second_data['species']['name'], stage_two_second.name)

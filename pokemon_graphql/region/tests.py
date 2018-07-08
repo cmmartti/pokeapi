@@ -38,12 +38,12 @@ class RegionTests(django.test.TestCase, APIData):
         # ---
         id = get_id("RegionName", name.id)
         executed = client.execute(
-            'query {node(id: "%s") {...on RegionName {id name}}}' % id,
+            'query {node(id: "%s") {...on RegionName {id text}}}' % id,
             **args
         )
         expected = {"data": {"node": {
             "id": id,
-            "name": name.name
+            "text": name.name
         }}}
         self.assertEqual(executed, expected)
 
@@ -59,17 +59,15 @@ class RegionTests(django.test.TestCase, APIData):
         client = Client(schema)
         executed = client.execute('''
             query {
-                regions(first: 1, where: {name: "base reg"}) {
+                regions(first: 1) {
                     edges {node {
                             id name
-                            names {id name}
+                            names {id text}
                             mainGeneration {id name mainRegion {id name}}
-                            locations(
-                                first: 1,
-                                where: {name: "lctn for base rgn"}
-                            ) {
+                            locations(first: 10) {
                                 edges {node {id name}}
                             }
+                            pokedexes {id name isMainSeries}
                             versionGroups {id name order}
                         }
                     }
@@ -87,7 +85,7 @@ class RegionTests(django.test.TestCase, APIData):
                                 "names": [
                                     {
                                         "id": get_id("RegionName", region_name.id),
-                                        "name": region_name.name,
+                                        "text": region_name.name,
                                     },
                                 ],
                                 "mainGeneration": {
@@ -106,6 +104,13 @@ class RegionTests(django.test.TestCase, APIData):
                                         }},
                                     ]
                                 },
+                                "pokedexes": [
+                                    {
+                                        "id": get_id("Pokedex", pokedex.id),
+                                        "name": pokedex.name,
+                                        "isMainSeries": pokedex.is_main_series,
+                                    }
+                                ],
                                 "versionGroups": [
                                     {
                                         "id": get_id("VersionGroup", version_group.id),

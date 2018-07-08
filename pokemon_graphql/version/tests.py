@@ -38,12 +38,12 @@ class VersionTests(django.test.TestCase, APIData):
         # ---
         id = get_id("VersionName", name.id)
         executed = client.execute(
-            'query {node(id: "%s") {...on VersionName {id name}}}' % id,
+            'query {node(id: "%s") {...on VersionName {id text}}}' % id,
             **args
         )
         expected = {"data": {"node": {
             "id": id,
-            "name": name.name
+            "text": name.name
         }}}
         self.assertEqual(executed, expected)
 
@@ -58,7 +58,7 @@ class VersionTests(django.test.TestCase, APIData):
                 versions(first: 1, where: {name: "base ver"}) {
                     edges {node {
                             id name
-                            names {id name}
+                            names {id text}
                             versionGroup {id name order}
                         }
                     }
@@ -76,7 +76,7 @@ class VersionTests(django.test.TestCase, APIData):
                                 "names": [
                                     {
                                         "id": get_id("VersionName", version_name.id),
-                                        "name": version_name.name,
+                                        "text": version_name.name,
                                     },
                                 ],
                                 "versionGroup": {

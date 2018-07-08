@@ -1,7 +1,7 @@
 import collections
 
-
-# from .util_for_tests import to_dict, to_unicode
+## Use this code before assertEqual:
+#         from ..util_for_tests import to_dict, to_unicode
 #         self.maxDiff = None
 #         expected = to_unicode(expected)
 #         executed = to_unicode(to_dict(executed))
@@ -30,8 +30,8 @@ def to_dict(ordered_dict):
 
 def to_unicode(data):
     if isinstance(data, basestring):
-        return data.decode('utf8')
-        # return str(data)
+        # return data.decode('utf8')
+        return str(data)
     elif isinstance(data, collections.Mapping):
         return dict(map(to_unicode, data.iteritems()))
     elif isinstance(data, collections.Iterable):

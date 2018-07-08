@@ -51,7 +51,9 @@ def build_base_classes(operationName, operationModule, operationBase, clsName):
             else:
                 logger.info('wat?')
                 logger.debug(current_directory)
-        except ImportError: # ModuleNotFoundError is better, but it doesn't exist in Python2
+
+        # ModuleNotFoundError is better, but it doesn't exist in Python2
+        except ImportError as e:
             pass
 
     op_base_classes = op_base_classes[::-1]

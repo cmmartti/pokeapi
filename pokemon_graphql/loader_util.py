@@ -70,7 +70,7 @@ def get_relations(keys, get_query_set_fn, id_attr):
             if key.args == args:
                 for item in batch:
                     if not hasattr(item, id_attr):
-                        raise ValueError('%s object has no id_attr %s' % (item, id_attr))
+                        raise ValueError('%s has no id_attr %s' % (item, id_attr))
 
                     # Does it match?
                     if key.id == getattr(item, id_attr):
@@ -80,51 +80,10 @@ def get_relations(keys, get_query_set_fn, id_attr):
     return results
 
 
-def get_relations_via_map(keys, get_query_set_fn, id_attr, map_attr):
-    '''
-    Given a list of `keys` (instances of LoaderKey), return a list of results the same length as `keys`, with each result corresponding to the correct key. Each result is a list of values that match up to the key.
-    The values are batch-fetched with the provided `get_query_set_fn(ids, **args)`, and each value is matched up to the key by comparing the `id_attr` of each item in the `map_attr` of the value to the key's id.
-    '''
-
-    # Create a new query set for each set of args using `get_query_set_fn`
-    batched_items = {}
-    for args, ids in group_by_batch(keys).iteritems():
-        batched_items[args] = get_query_set_fn(ids, **args._asdict()) # TODO: Should ids be de-duplicated?
-
-    # Iterate through each item in each batch and match it to the keys
-    # to create a results list
-    results = []
-    for key in keys:
-        values = []
-        for args, batch in batched_items.iteritems():
-
-            # Don't bother going down the rabbit hole if this one doesn't have
-            # the right `args`
-            if key.args == args:
-                for item in batch:
-                    if not hasattr(item, map_attr):
-                        raise ValueError('%s object has no map_attr %s' % (item, map_attr))
-
-                    # Check each item in the map
-                    # Note: .all() is a Django query set method
-                    for mapped_item in getattr(item, map_attr).all():
-                        if not hasattr(mapped_item, id_attr):
-                            raise ValueError('%s object has no id_attr %s' % (item, id_attr))
-
-                        # Does it match?
-                        if key.id == getattr(mapped_item, id_attr):
-                            values.append(item)
-                            # We got a match; no need to check the others in the map
-                            break
-
-        results.append(values)
-    return results
-
-
 def add_filters(query_set, args, **map):
-    '''Return query_set with applicable filters added.
+    '''Return query_set with applicable filters applied.
      - query_set: Django query set
-     - args: a dictionary containing filter values, as defined in the LoaderKey class
+     - args: a dictionary containing filter values
      - map: keyword arguments mapping the filter name to the ORM filter name
     '''
     for sql_name, name in map.iteritems():

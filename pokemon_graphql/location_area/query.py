@@ -17,4 +17,5 @@ class Query(BaseQuery):
 
     def resolve_location_areas(self, info, **kwargs):
         q = models.LocationArea.objects.all()
+        q = Where.apply(q, **kwargs.get("where", {}))
         return getConnection(q, LocationAreaConnection, **kwargs)

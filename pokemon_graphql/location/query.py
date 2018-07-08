@@ -17,4 +17,5 @@ class Query(BaseQuery):
 
     def resolve_locations(self, info, **kwargs):
         q = models.Location.objects.all()
+        q = Where.apply(q, **kwargs.get("where", {}))
         return getConnection(q, LocationConnection, **kwargs)

@@ -19,31 +19,31 @@ args = {
 class EncounterMethodTests(django.test.TestCase, APIData):
 
     def test_node(self):
-        method = self.setup_encounter_method_data()
-        name = self.setup_encounter_method_name_data(method)
+        encounter_method = self.setup_encounter_method_data()
+        encounter_method_name = self.setup_encounter_method_name_data(encounter_method)
         client = Client(schema)
 
         # ---
-        id = get_id("EncounterMethod", method.id)
+        id = get_id("EncounterMethod", encounter_method.id)
         executed = client.execute(
             'query {node(id: "%s") {...on EncounterMethod {id name}}}'% id,
             **args
         )
         expected = {"data": {"node": {
             "id": id,
-            "name": method.name
+            "name": encounter_method.name
         }}}
         self.assertEqual(executed, expected)
 
         # ---
-        id = get_id("EncounterMethod", method.id)
+        id = get_id("EncounterMethodName", encounter_method_name.id)
         executed = client.execute(
-            'query {node(id: "%s") {...on EncounterMethod {id name}}}' % id,
+            'query {node(id: "%s") {...on EncounterMethodName {id text}}}' % id,
             **args
         )
         expected = {"data": {"node": {
             "id": id,
-            "name": method.name
+            "text": encounter_method_name.name
         }}}
         self.assertEqual(executed, expected)
 
@@ -60,7 +60,7 @@ class EncounterMethodTests(django.test.TestCase, APIData):
                 encounterMethods(first: 1, where: {name: "base encntr mthd"}) {
                     edges {node {
                         id name
-                        names {id name}
+                        names {id text}
                         order
                     }}
                 }
@@ -79,7 +79,7 @@ class EncounterMethodTests(django.test.TestCase, APIData):
                                 "names": [
                                     {
                                         "id": get_id("EncounterMethodName", encounter_method_name.id),
-                                        "name": encounter_method_name.name,
+                                        "text": encounter_method_name.name,
                                     },
                                 ],
                                 "order": encounter_method.order,

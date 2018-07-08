@@ -39,12 +39,12 @@ class LocationTests(django.test.TestCase, APIData):
         # ---
         id = get_id("LocationName", name.id)
         executed = client.execute(
-            'query {node(id: "%s") {...on LocationName {id name}}}' % id,
+            'query {node(id: "%s") {...on LocationName {id text}}}' % id,
             **args
         )
         expected = {"data": {"node": {
             "id": id,
-            "name": name.name
+            "text": name.name
         }}}
         self.assertEqual(executed, expected)
 
@@ -58,13 +58,11 @@ class LocationTests(django.test.TestCase, APIData):
         self.assertEqual(executed, expected)
 
     def test_query(self):
-        location = self.setup_location_data(name='base lctn')
+        region = self.setup_region_data(name='rgn for lctn')
+        location = self.setup_location_data(name='base lctn', region=region)
         location_name = self.setup_location_name_data(location, name='base lctn name')
         location_game_index = self.setup_location_game_index_data(location, game_index=10)
-
-
-                            # region {id name}
-                            # areas {id name}
+        location_area = self.setup_location_area_data(location, name="lctn area for lctn")
 
         client = Client(schema)
         executed = client.execute('''
@@ -72,7 +70,9 @@ class LocationTests(django.test.TestCase, APIData):
                 locations(first: 1, where: {name: "base lctn"}) {
                     edges {node {
                             id name
-                            names {id name}
+                            names {id text}
+                            areas {id name gameIndex}
+                            region {id name }
                             gameIndices {id gameIndex}
                         }
                     }
@@ -90,9 +90,20 @@ class LocationTests(django.test.TestCase, APIData):
                                 "names": [
                                     {
                                         "id": get_id("LocationName", location_name.id),
-                                        "name": location_name.name,
+                                        "text": location_name.name,
                                     },
                                 ],
+                                "areas": [
+                                    {
+                                        "id": get_id("LocationArea", location_area.id),
+                                        "name": location_area.name,
+                                        "gameIndex": location_area.game_index
+                                    },
+                                ],
+                                "region": {
+                                    "id": get_id("Region", region.id),
+                                    "name": region.name,
+                                },
                                 "gameIndices": [
                                     {
                                         "id": get_id("LocationGameIndex", location_game_index.id),

@@ -63,6 +63,7 @@ class LanguageOrder(BaseOrder):
 
 class LanguageName(ObjectType):
     name = String(
+        name="text",
         description="The localized name for a resource in a specific language."
     )
     local_language_id = None

@@ -38,12 +38,12 @@ class LanguageTests(django.test.TestCase, APIData):
         # ---
         id = get_id("LanguageName", name.id)
         executed = client.execute(
-            'query {node(id: "%s") {...on LanguageName {id name}}}' % id,
+            'query {node(id: "%s") {...on LanguageName {id text}}}' % id,
             **args
         )
         expected = {"data": {"node": {
             "id": id,
-            "name": name.name
+            "text": name.name
         }}}
         self.assertEqual(executed, expected)
 
@@ -58,7 +58,7 @@ class LanguageTests(django.test.TestCase, APIData):
                 languages(first: 1, where: {name: "base lang"}) {
                     edges {node {
                             id name official iso639 iso3166
-                            names {id name}
+                            names {id text}
                         }
                     }
                 }
@@ -80,7 +80,7 @@ class LanguageTests(django.test.TestCase, APIData):
                                 "names": [
                                     {
                                         "id": get_id("LanguageName", language_name.id),
-                                        "name": language_name.name
+                                        "text": language_name.name
                                     },
                                 ],
                             }

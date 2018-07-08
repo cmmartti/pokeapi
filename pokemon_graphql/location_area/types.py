@@ -35,7 +35,7 @@ class LocationArea(ObjectType):
     )
     pokemon_encounters = relay.ConnectionField(
         lazy_import(ROOT + 'pokemon_encounter.types.PokemonEncounterConnection'),
-        description="A list of Pokémon that can be encountered in this area along with version specific details about the encounter."
+        description="A list of Pokémon encounters for this location area."
     )
 
     def resolve_names(self, info, **kwargs):
@@ -56,13 +56,19 @@ class LocationArea(ObjectType):
         q = models.Pokemon.objects.all()
         q = q.filter(encounter__location_area_id=self.id).distinct()
         return getConnection(
-            q,
-            PokemonEncounterConnection,
-            lambda pokemon: PokemonEncounter.fill(
-                PokemonEncounterID(self.id, pokemon.id)
-            ),
+            q, PokemonEncounterConnection,
+            lambda data: LocationArea.get_pkmn_encounter(self, data),
             **kwargs
         )
+
+    @staticmethod
+    def get_pkmn_encounter(self, pokemon):
+        from ..pokemon_encounter.types import PokemonEncounter
+
+        pkmn_encounter = PokemonEncounter()
+        pkmn_encounter.location_area_id = self.id
+        pkmn_encounter.pokemon_id = pokemon.id
+        return pkmn_encounter
 
     class Meta:
         interfaces = (RelayNode, )

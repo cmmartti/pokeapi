@@ -17,4 +17,5 @@ class Query(BaseQuery):
 
     def resolve_languages(self, info, **kwargs):
         q = models.Language.objects.all()
+        q = Where.apply(q, **kwargs.get("where", {}))
         return getConnection(q, LanguageConnection, **kwargs)

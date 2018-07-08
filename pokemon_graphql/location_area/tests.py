@@ -41,12 +41,12 @@ class LocationAreaTests(django.test.TestCase, APIData):
         # ---
         id = get_id("LocationAreaName", name.id)
         executed = client.execute(
-            'query {node(id: "%s") {...on LocationAreaName {id name}}}' % id,
+            'query {node(id: "%s") {...on LocationAreaName {id text}}}' % id,
             **args
         )
         expected = {"data": {"node": {
             "id": id,
-            "name": name.name
+            "text": name.name
         }}}
         self.assertEqual(executed, expected)
 
@@ -89,7 +89,7 @@ class LocationAreaTests(django.test.TestCase, APIData):
                     edges {
                         node {
                             id name
-                            names {id name}
+                            names {id text}
                             gameIndex
                             location {id name}
                             encounterMethodRates {
@@ -100,16 +100,14 @@ class LocationAreaTests(django.test.TestCase, APIData):
                                     version {id name}
                                 }
                             }
-                            pokemonEncounters(first: 2) {
+                            pokemonEncounters(first: 10) {
                                 edges {
                                     node {
-                                        id pokemonId
-                                        versionDetails {
-                                            id maxChance
+                                        pokemon {id name}
+                                        versionDetails{
+                                            maxChance
                                             encounterDetails(first: 10) {
-                                                edges {
-                                                    node {id}
-                                                }
+                                                edges {node {id}}
                                             }
                                             version {id name}
                                         }
@@ -121,6 +119,87 @@ class LocationAreaTests(django.test.TestCase, APIData):
                 }
             }
         ''', **args)
+
+        encounterMethodRates = [
+            {
+                "id": get_id("EncounterMethodRate", location_area_encounter_rate.id),
+                "encounterMethod": {
+                    "id": get_id("EncounterMethod", encounter_method.id),
+                    "name": encounter_method.name,
+                },
+                "versionDetails": [
+                    {
+                        "id": get_id(
+                            "EncounterVersionDetails", location_area_encounter_rate.id
+                        ),
+                        "rate": location_area_encounter_rate.rate,
+                        "version": {
+                            "id": get_id(
+                                "Version", location_area_encounter_rate.version.id
+                            ),
+                            "name": location_area_encounter_rate.version.name,
+                        },
+                    },
+                ],
+            },
+        ]
+        pokemonEncounters = {
+            "edges": [
+                {
+                    "node": {
+                        "pokemon": {
+                            "id": get_id("Pokemon", pokemon1.id),
+                            "name": pokemon1.name
+                        },
+                        "versionDetails": [
+                            {
+                                "maxChance": encounter_slot1.rarity,
+                                "encounterDetails": {
+                                    "edges": [
+                                        {
+                                            "node": {
+                                                "id": get_id("Encounter", encounter1.id)
+                                            }
+                                        }
+                                    ]
+                                },
+                                "version": {
+                                    "id": get_id("Version", encounter1.version.id),
+                                    "name": encounter1.version.name,
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "node": {
+                        "pokemon": {
+                            "id": get_id("Pokemon", pokemon2.id),
+                            "name": pokemon2.name
+                        },
+                        "versionDetails": [
+                            {
+                                "maxChance": encounter_slot2.rarity,
+                                "encounterDetails": {
+                                    "edges": [
+                                        {
+                                            "node": {
+                                                "id": get_id("Encounter", encounter2.id)
+                                            }
+                                        }
+                                    ]
+                                },
+                                "version": {
+                                    "id": get_id("Version", encounter2.version.id),
+                                    "name": encounter2.version.name,
+                                }
+                            }
+                        ]
+                    }
+                },
+            ]
+        }
+
         expected = {
             "data": {
                 "locationAreas": {
@@ -132,7 +211,7 @@ class LocationAreaTests(django.test.TestCase, APIData):
                                 "names": [
                                     {
                                         "id": get_id("LocationAreaName", location_area_name.id),
-                                        "name": location_area_name.name,
+                                        "text": location_area_name.name,
                                     },
                                 ],
                                 "gameIndex": location_area.game_index,
@@ -140,99 +219,8 @@ class LocationAreaTests(django.test.TestCase, APIData):
                                     "id": get_id("Location", location.id),
                                     "name": location.name,
                                 },
-                                "encounterMethodRates": [
-                                    {
-                                        "id": get_id("EncounterMethodRate", location_area_encounter_rate.id),
-                                        "encounterMethod": {
-                                            "id": get_id("EncounterMethod", encounter_method.id),
-                                            "name": encounter_method.name,
-                                        },
-                                        "versionDetails": [
-                                            {
-                                                "id": get_id("EncounterVersionDetails", location_area_encounter_rate.id),
-                                                "rate": location_area_encounter_rate.rate,
-                                                "version": {
-                                                    "id": get_id("Version", location_area_encounter_rate.version.id),
-                                                    "name": location_area_encounter_rate.version.name,
-                                                },
-                                            },
-                                        ],
-                                    },
-                                ],
-                                "pokemonEncounters": {
-                                    "edges": [
-                                        {
-                                            "node": {
-                                                "id": get_id(
-                                                    "PokemonEncounter",
-                                                    "{0}/{1}".format(location_area.id, pokemon1.id)
-                                                ),
-                                                "pokemonId": pokemon1.id,
-                                                "versionDetails": [
-                                                    {
-                                                        "id": get_id(
-                                                            "VersionEncounterDetail",
-                                                            "{0}/{1}/{2}".format(
-                                                                location_area.id,
-                                                                pokemon1.id,
-                                                                encounter1.version.id
-                                                            )
-                                                        ),
-                                                        "maxChance": encounter_slot1.rarity,
-                                                        "encounterDetails": {
-                                                            "edges": [
-                                                                {
-                                                                    "node": {
-                                                                        "id": get_id("Encounter", encounter1.id)
-                                                                    }
-                                                                }
-                                                            ]
-                                                        },
-                                                        "version": {
-                                                            "id": get_id("Version", encounter1.version.id),
-                                                            "name": encounter1.version.name,
-                                                        }
-                                                    }
-                                                ]
-                                            }
-                                        },
-                                        {
-                                            "node": {
-                                                "id": get_id(
-                                                    "PokemonEncounter",
-                                                    "{0}/{1}".format(location_area.id, pokemon2.id)
-                                                ),
-                                                "pokemonId": pokemon2.id,
-                                                "versionDetails": [
-                                                    {
-                                                        "id": get_id(
-                                                            "VersionEncounterDetail",
-                                                            "{0}/{1}/{2}".format(
-                                                                location_area.id,
-                                                                pokemon2.id,
-                                                                encounter2.version.id
-                                                            )
-                                                        ),
-                                                        "maxChance": encounter_slot2.rarity,
-                                                        "encounterDetails": {
-                                                            "edges": [
-                                                                {
-                                                                    "node": {
-                                                                        "id": get_id("Encounter", encounter2.id)
-                                                                    }
-                                                                }
-                                                            ]
-                                                        },
-                                                        "version": {
-                                                            "id": get_id("Version", encounter2.version.id),
-                                                            "name": encounter2.version.name,
-                                                        }
-                                                    }
-                                                ]
-                                            }
-                                        },
-                                    ]
-                                }
+                                "encounterMethodRates": encounterMethodRates,
+                                "pokemonEncounters": pokemonEncounters,
                             }
                         }
                     ]

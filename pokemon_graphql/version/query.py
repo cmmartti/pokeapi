@@ -17,4 +17,5 @@ class Query(BaseQuery):
 
     def resolve_versions(self, info, **kwargs):
         q = models.Version.objects.all()
+        q = Where.apply(q, **kwargs.get("where", {}))
         return getConnection(q, VersionConnection, **kwargs)

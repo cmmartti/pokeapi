@@ -1,11 +1,6 @@
 import unittest
 
-from .loader_util import (
-    divide_by_key,
-    group_by_batch,
-    get_relations,
-    get_relations_via_map
-)
+from .loader_util import divide_by_key, group_by_batch, get_relations
 from .loader_key import LoaderKey
 
 
@@ -78,16 +73,6 @@ class UtilTestCase(unittest.TestCase):
         ]
 
         self.assertEqual(relations, should_be)
-
-    def test_get_relations_via_map(self):
-        keys = [
-            LoaderKey(id=9, qty=3),
-            LoaderKey(id=8, qty=1),
-            LoaderKey(id=7, qty=0),
-        ]
-        relations = get_relations_via_map(
-            keys, UtilTestCase.get_query_set, "other_id", "some_map"
-        )
 
     @staticmethod
     def get_query_set(ids, qty):

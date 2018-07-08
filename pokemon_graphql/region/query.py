@@ -17,4 +17,5 @@ class Query(BaseQuery):
 
     def resolve_regions(self, info, **kwargs):
         q = models.Region.objects.all()
+        q = Where.apply(q, **kwargs.get("where", {}))
         return getConnection(q, RegionConnection, **kwargs)

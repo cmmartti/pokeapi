@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
-from graphene import String, Boolean, Field, List, ObjectType, Enum, relay
-from graphene import lazy_import
+from graphene import *
+from graphene import relay
 
+from pokemon_v2 import models
+from ..connections import getConnection
 from ..loader_key import LoaderKey
 from ..base import BaseConnection, BaseOrder, BaseName
 from ..relay_node import RelayNode
 from ..field import TranslationList
+from ..where import Where
 
 
 class Generation(ObjectType):
@@ -18,31 +21,33 @@ class Generation(ObjectType):
         lambda: GenerationName,
         description="The name of this generation listed in different languages."
     )
-    # abilities = relay.ConnectionField(
-    #     lazy_import('pokemon_graphql.ability.types.Ability'),
-    #     description="A list of abilities that were introduced in this generation.",
-    #     where=Argument(lambda: Where), order_by=Argument(lambda: AbilityOrder)
-    # )
+    abilities = relay.ConnectionField(
+        lazy_import('pokemon_graphql.ability.types.AbilityConnection'),
+        description="A list of abilities that were introduced in this generation.",
+        where=Argument(lambda: Where),
+        order_by=Argument(lazy_import("pokemon_graphql.ability.types.AbilityOrder"))
+    )
     region_id = None
     main_region = Field(
         lazy_import('pokemon_graphql.region.types.Region'),
         description="The main region travelled in this generation."
     )
-    # moves = relay.ConnectionField(
-    #     lazy_import('pokemon_graphql.move.types.Move'),
-    #     description="A list of moves that were introduced in this generation.",
-    #     where=Argument(lambda: Where), order_by=Argument(lambda: MoveOrder)
-    # )
-    # pokemon_species = relay.ConnectionField(
-    #     lazy_import('pokemon_graphql.pokemon_species.types.PokemonSpecies'),
-    #     description="A list of Pokémon species that were introduced in this generation.",
-    #     where=Argument(lambda: Where),
-    #     order_by=Argument(lazy_import('pokemon_graphql.pokemon_species.types.PokemonSpeciesOrder'))
-    # )
-    # types = List(
-    #     lazy_import('pokemon_graphql.type.types.Type'),
-    #     description="A list of types that were introduced in this generation."
-    # )
+    moves = relay.ConnectionField(
+        lazy_import('pokemon_graphql.move.types.MoveConnection'),
+        description="A list of moves that were introduced in this generation.",
+        where=Argument(Where),
+        order_by=Argument(lazy_import('pokemon_graphql.move.types.MoveOrder'))
+    )
+    pokemon_species = relay.ConnectionField(
+        lazy_import('pokemon_graphql.pokemon_species.types.PokemonSpeciesConnection'),
+        description="A list of Pokémon species that were introduced in this generation.",
+        where=Argument(lambda: Where),
+        order_by=Argument(lazy_import('pokemon_graphql.pokemon_species.types.PokemonSpeciesOrder'))
+    )
+    types = List(
+        lazy_import('pokemon_graphql.type.types.Type'),
+        description="A list of types that were introduced in this generation."
+    )
     version_groups = List(
         lazy_import('pokemon_graphql.version_group.types.VersionGroup'),
         description="A list of version groups that were introduced in this generation."
@@ -53,23 +58,25 @@ class Generation(ObjectType):
         return info.context.loaders.generation_names.load(key)
 
     def resolve_abilities(self, info, **kwargs):
-        key = LoaderKey(self.id, **kwargs)
-        return info.context.loaders.abilities_by_generation.load(key)
+        from ..ability.types import AbilityConnection
 
-    # def resolve_abilities(self, info, **kwargs):
-    #     q = models.Ability.objects.all()
-    #     return getConnection(q, AbilityConnection, **kwargs)
+        q = models.Ability.objects.filter(generation_id=self.id)
+        return getConnection(q, AbilityConnection, **kwargs)
 
     def resolve_main_region(self, info, **kwargs):
         return info.context.loaders.region.load(self.region_id)
 
-    # def resolve_moves(self, info, **kwargs):
-    #     q = models.Move.objects.all()
-    #     return getConnection(q, MoveConnection, **kwargs)
+    def resolve_moves(self, info, **kwargs):
+        from ..move.types import MoveConnection
 
-    # def resolve_pokemon_species(self, info, **kwargs):
-    #     q = models.PokemonSpecies.objects.all()
-    #     return getConnection(q, PokemonSpeciesConnection, **kwargs)
+        q = models.Move.objects.filter(generation_id=self.id)
+        return getConnection(q, MoveConnection, **kwargs)
+
+    def resolve_pokemon_species(self, info, **kwargs):
+        from ..pokemon_species.types import PokemonSpeciesConnection
+
+        q = models.PokemonSpecies.objects.filter(generation_id=self.id)
+        return getConnection(q, PokemonSpeciesConnection, **kwargs)
 
     def resolve_types(self, info, **kwargs):
         key = LoaderKey(self.id, **kwargs)
@@ -100,14 +107,14 @@ class GenerationOrderField(Enum):
     @property
     def description(self):
         if self == GenerationOrderField.NAME:
-            return "Order generations by name."
+            return "Order by name."
 
 
 class GenerationOrder(BaseOrder):
     """Ordering options for generation connections."""
 
     field = GenerationOrderField(
-        description="The field to order generations by.",
+        description="The field to order edges by.",
         required=True
     )
 

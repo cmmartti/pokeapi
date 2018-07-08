@@ -38,12 +38,12 @@ class GenerationTests(django.test.TestCase, APIData):
         # ---
         id = get_id("GenerationName", name.id)
         executed = client.execute(
-            'query {node(id: "%s") {...on GenerationName {id name}}}' % id,
+            'query {node(id: "%s") {...on GenerationName {id text}}}' % id,
             **args
         )
         expected = {"data": {"node": {
             "id": id,
-            "name": name.name
+            "text": name.name
         }}}
         self.assertEqual(executed, expected)
 
@@ -65,8 +65,18 @@ class GenerationTests(django.test.TestCase, APIData):
                 generations(first: 1, where: {name: "base gen"}) {
                     edges {node {
                             id name
-                            names {id name}
+                            names {id text}
+                            abilities(first: 1) {edges {node {
+                                id name isMainSeries
+                            }}}
                             mainRegion {id name}
+                            moves(first: 10) {edges {node {
+                                id name
+                            }}}
+                            pokemonSpecies(first: 1) {edges {node {
+                                id name
+                            }}}
+                            types {id name}
                             versionGroups {id name order}
                         }
                     }
@@ -84,13 +94,50 @@ class GenerationTests(django.test.TestCase, APIData):
                                 "names": [
                                     {
                                         "id": get_id("GenerationName", generation_name.id),
-                                        "name": generation_name.name,
+                                        "text": generation_name.name,
                                     },
                                 ],
+                                "abilities": {
+                                    "edges": [
+                                        {
+                                            "node": {
+                                                "id": get_id("Ability", ability.id),
+                                                "name": ability.name,
+                                                "isMainSeries": ability.is_main_series,
+                                            }
+                                        }
+                                    ]
+                                },
                                 "mainRegion": {
                                     "id": get_id("Region", region.id),
                                     "name": region.name
                                 },
+                                "moves": {
+                                    "edges": [
+                                        {
+                                            "node": {
+                                                "id": get_id("Move", move.id),
+                                                "name": move.name,
+                                            }
+                                        }
+                                    ]
+                                },
+                                "pokemonSpecies": {
+                                    "edges": [
+                                        {
+                                            "node": {
+                                                "id": get_id("PokemonSpecies", pokemon_species.id),
+                                                "name": pokemon_species.name,
+                                            }
+                                        }
+                                    ]
+                                },
+                                "types": [
+                                    {
+                                        "id": get_id("Type", type.id),
+                                        "name": type.name,
+                                    }
+                                ],
                                 "versionGroups": [
                                     {
                                         "id": get_id("VersionGroup", version_group.id),

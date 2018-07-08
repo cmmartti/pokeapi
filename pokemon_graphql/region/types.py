@@ -9,7 +9,6 @@ from ..loader_key import LoaderKey
 from ..relay_node import RelayNode
 from ..field import TranslationList
 from ..where import Where
-from ..location.types import LocationConnection
 
 
 class Region(ObjectType):
@@ -32,10 +31,10 @@ class Region(ObjectType):
         where=Argument(Where),
         order_by=Argument(lazy_import("pokemon_graphql.location.types.LocationOrder"))
     )
-    # pokedexes = List(
-    #     lazy_import('pokemon_graphql.pokedex.types.Pokedex'),
-    #     description="A lists of pokédexes that catalogue Pokémon in this region."
-    # )
+    pokedexes = List(
+        lazy_import('pokemon_graphql.pokedex.types.Pokedex'),
+        description="A lists of pokédexes that catalogue Pokémon in this region."
+    )
     version_groups = List(
         lazy_import('pokemon_graphql.version_group.types.VersionGroup'),
         description="A list of version groups where this region can be visited."
@@ -49,6 +48,8 @@ class Region(ObjectType):
         return info.context.loaders.generation_by_region.load(self.id)
 
     def resolve_locations(self, info, **kwargs):
+        from ..location.types import LocationConnection
+
         q = models.Location.objects.filter(region_id=self.id)
         return getConnection(q, LocationConnection, **kwargs)
 

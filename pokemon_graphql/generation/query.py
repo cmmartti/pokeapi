@@ -12,9 +12,11 @@ class Query(BaseQuery):
     generations = relay.ConnectionField(
         GenerationConnection,
         description="A list of generations (groupings of games based on the Pokémon they include).",
-        where=Argument(Where), order_by=Argument(GenerationOrder)
+        where=Argument(Where),
+        order_by=Argument(GenerationOrder)
     )
 
     def resolve_generations(self, info, **kwargs):
         q = models.Generation.objects.all()
+        q = Where.apply(q, **kwargs.get("where", {}))
         return getConnection(q, GenerationConnection, **kwargs)

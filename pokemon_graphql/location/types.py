@@ -18,19 +18,19 @@ class Location(ObjectType):
         lambda: LocationName,
         description="The name of this location listed in different languages."
     )
+    areas = List(
+        lazy_import('pokemon_graphql.location_area.types.LocationArea'),
+        description="Areas that can be found within this location."
+    )
     region_id = None
-    # region = Field(
-    #     lazy_import('pokemon_graphql.region.types.Region'),
-    #     description="The region this location can be found in."
-    # )
+    region = Field(
+        lazy_import('pokemon_graphql.region.types.Region'),
+        description="The region this location can be found in."
+    )
     game_indices = List(
         lambda: LocationGameIndex,
         description="A list of game indices relevent to this location by generation."
     )
-    # areas = List(
-    #     lazy_import('pokemon_graphql.location_area.types.LocationArea'),
-    #     description="Areas that can be found within this location."
-    # )
 
     def resolve_names(self, info, **kwargs):
         key = LoaderKey(self.id, **kwargs)
@@ -44,7 +44,7 @@ class Location(ObjectType):
         return info.context.loaders.location_gameindices.load(key)
 
     def resolve_areas(self, info, **kwargs):
-        key = LoaderKey(self.id, kwargs)
+        key = LoaderKey(self.id, **kwargs)
         return info.context.loaders.locationareas_by_location.load(key)
 
     class Meta:
