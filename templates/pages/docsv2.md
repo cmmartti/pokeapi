@@ -2,12 +2,12 @@
 # Pokeapi V2 API Reference
 
 <table class="hide">
-  <tbody>
-    <tr>
-      <th colspan="3">API Endpoints</th>
-    </tr>
-    <tr>
-      <td>
+	<tbody>
+		<tr>
+			<th colspan="3">API Endpoints</th>
+		</tr>
+		<tr>
+			<td>
 				<ul>
 					<li><a href="#abilities">Abilities</a></li>
 					<li><a href="#berries">Berries</a></li>
@@ -26,8 +26,8 @@
 					<li><a href="#genders">Genders</a></li>
 					<li><a href="#growth-rates">Growth Rates</a></li>
 				</ul>
-      </td>
-      <td>
+			</td>
+			<td>
 				<ul>
 					<li><a href="#items">Items</a></li>
 					<li><a href="#item-categories">Item Categories</a></li>
@@ -46,8 +46,8 @@
 					<li><a href="#move-learn-methods">Move Learn Methods</a></li>
 					<li><a href="#move-targets">Move Targets</a></li>
 				</ul>
-      </td>
-      <td>
+			</td>
+			<td>
 				<ul>
 					<li><a href="#natures">Natures</a></li>
 					<li><a href="#pal-park-areas">Pal Park Areas</a></li>
@@ -66,9 +66,9 @@
 					<li><a href="#version">Versions</a></li>
 					<li><a href="#version-groups">Version Groups</a></li>
 				</ul>
-      </td>
-    </tr>
-  </tbody>
+			</td>
+		</tr>
+	</tbody>
 </table>
 
 ## Resource Lists

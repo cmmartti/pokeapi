@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from graphene import Int, String, Boolean, Field, List, ObjectType, Enum, relay, Argument
-from graphene import lazy_import
+from graphene import *
+from graphene import relay
 
 from pokemon_v2 import models
 from ..connections import getPage
@@ -25,8 +25,8 @@ class PalParkArea(ObjectType):
     pokemon_encounters = relay.ConnectionField(
         lambda: PalParkEncounterSpeciesConnection,
         description="A list of Pokémon encountered in this pal park area along with details.",
-        where=Argument(Where),
-        order_by=Argument(lambda: PalParkEncounterSpeciesOrder)
+        order_by=Argument(List(lambda: PalParkEncounterSpeciesOrdering)),
+        where=Argument(Where)
     )
 
     def resolve_names(self, info, **kwargs):
@@ -60,25 +60,6 @@ class PalParkArea(ObjectType):
         return info.context.loaders.palparkarea.load(id)
 
 
-class PalParkAreaOrderField(Enum):
-    """Properties by which pal park area connections can be ordered."""
-
-    NAME = "name"
-
-    @property
-    def description(self):
-        if self == PalParkAreaOrderField.NAME:
-            return "Order pal park areas by name."
-
-
-class PalParkAreaOrder(BaseOrder):
-    """Ordering options for pal park area connections."""
-    field = PalParkAreaOrderField(
-        description="The field to order pal park areas by.",
-        required=True
-    )
-
-
 class PalParkAreaName(BaseName):
     class Meta:
         interfaces = (RelayNode, )
@@ -101,20 +82,11 @@ class PalParkEncounterSpeciesConnection(BaseConnection, relay.Connection):
         )
 
 
-class PalParkEncounterSpeciesOrderField(Enum):
-    """Properties by which pal park encounter species can be ordered."""
-
-    NAME = "name"
-
-    @property
-    def description(self):
-        if self == PalParkEncounterSpeciesOrderField.NAME:
-            return "Order pal park encounter species by name."
-
-
-class PalParkEncounterSpeciesOrder(BaseOrder):
-    """Ordering options for pal park encounter species."""
-    field = PalParkEncounterSpeciesOrderField(
-        description="The field to order pal park encounter species by.",
-        required=True
+class PalParkEncounterSpeciesOrdering(BaseOrder):
+    sort = InputField(
+        Enum('PalParkEncounterSpeciesSort', [
+            ("BASE_SCORE", "base_score"),
+            ("RATE", "rate"),
+        ]),
+        description="The field to sort by."
     )

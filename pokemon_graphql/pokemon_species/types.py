@@ -4,10 +4,9 @@ from graphene import relay
 
 from pokemon_v2 import models
 from ..connections import getConnection, getPage
-from ..base import BaseConnection, BaseOrder, BaseName, BaseDescription, BaseFlavorText, BaseTranslationObject
+from ..base import BaseName, BaseDescription, BaseFlavorText, BaseTranslationObject
 from ..loader_key import LoaderKey
 from ..field import TranslationList
-from ..where import Where
 from ..interfaces import RelayNode, SimpleEdge
 
 
@@ -165,30 +164,6 @@ class PokemonSpecies(ObjectType):
         return info.context.loaders.pokemonspecies.load(id)
 
 
-class PokemonSpeciesConnection(BaseConnection, relay.Connection):
-    class Meta:
-        node = PokemonSpecies
-
-
-class PokemonSpeciesOrderField(Enum):
-    """Properties by which Pokemon species connections can be ordered."""
-
-    NAME = "name"
-
-    @property
-    def description(self):
-        if self == PokemonSpeciesOrderField.NAME:
-            return "Order Pokémon species by name."
-
-
-class PokemonSpeciesOrder(BaseOrder):
-    """Ordering options for Pokemon species connections."""
-    field = PokemonSpeciesOrderField(
-        description="The field to order Pokémon species by.",
-        required=True
-    )
-
-
 class PokemonSpeciesName(BaseName):
     class Meta:
         interfaces = (RelayNode, )
@@ -199,6 +174,13 @@ class PokemonSpeciesName(BaseName):
 
 
 class PokemonSpeciesFlavorText(BaseFlavorText):
+    version_id = None
+    version = Field(
+        lazy_import("pokemon_graphql.version.types.Version"),
+        description="The version relevent to this flavor text.",
+        resolver=lambda root, info: info.context.loaders.version.load(root.version_id)
+    )
+
     class Meta:
         interfaces = (RelayNode, )
 

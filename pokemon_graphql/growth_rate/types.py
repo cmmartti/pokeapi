@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
-from graphene import Int, String, Boolean, Field, List, ObjectType, Enum, relay, Argument
-from graphene import lazy_import
+from graphene import *
+from graphene import relay
 
 from pokemon_v2 import models
 from ..connections import getConnection
-from ..base import BaseConnection, BaseOrder, BaseDescription
+from ..base import BaseDescription
 from ..loader_key import LoaderKey
 from ..relay_node import RelayNode
 from ..field import TranslationList
-from ..where import Where
 
 
 class GrowthRate(ObjectType):
@@ -33,11 +32,13 @@ class GrowthRate(ObjectType):
         level=Argument(Int, required=True)
     )
     pokemon_species = relay.ConnectionField(
-        lazy_import("pokemon_graphql.pokemon_species.types.PokemonSpeciesConnection"),
+        lazy_import("pokemon_graphql.pokemon_species.connection.PokemonSpeciesConnection"),
         description="A list of Pokémon species that gain levels at this growth rate.",
-        where=Argument(Where),
-        order_by=Argument(lazy_import(
-            "pokemon_graphql.pokemon_species.types.PokemonSpeciesOrder"
+        where=Argument(
+            lazy_import("pokemon_graphql.pokemon_species.connection.PokemonSpeciesWhere")
+        ),
+        order_by=Argument(List(
+            lazy_import("pokemon_graphql.pokemon_species.connection.PokemonSpeciesOrdering")
         ))
     )
 
@@ -56,7 +57,7 @@ class GrowthRate(ObjectType):
         )
 
     def resolve_pokemon_species(self, info, **kwargs):
-        from ..pokemon_species.types import PokemonSpeciesConnection
+        from ..pokemon_species.connection import PokemonSpeciesConnection
 
         q = models.PokemonSpecies.objects.filter(growth_rate_id=self.id)
         return getConnection(q, PokemonSpeciesConnection, **kwargs)

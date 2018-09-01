@@ -39,7 +39,17 @@ class ConnectionTests(django.test.TestCase, APIData):
 
         # First 3 after 4
         executed = client.execute(
-            '''query {languages(first: 3, after: "%s") {edges {node {id name}}}}''' % encode_cursor((str(language4.id), )),
+            '''
+            query {
+                languages(first: 3, after: "%s") {
+                    edges {
+                        node {
+                            id name
+                        }
+                    }
+                }
+            }
+            ''' % encode_cursor((str(language4.id), )),
             **args
         )
         expected = {
@@ -103,9 +113,19 @@ class ConnectionTests(django.test.TestCase, APIData):
         # First 3 after 4 ordered by name descending
         executed = client.execute(
             '''
-            query {languages(
-                first: 3, after: "%s", orderBy: {field: NAME, direction: DESC}
-            ) {edges {node {id name}}}}
+            query {
+                languages(
+                    first: 3
+                    after: "%s"
+                    orderBy: [{sort: NAME, direction: DESC}]
+                ) {
+                    edges {
+                        node {
+                            id name
+                        }
+                    }
+                }
+            }
             ''' % encode_cursor((language6.name, str(language6.id) )),
             **args
         )
@@ -144,12 +164,18 @@ class ConnectionTests(django.test.TestCase, APIData):
 
         client = Client(schema)
 
-        # TotalCount
+        # Total Count
         executed = client.execute(
             '''
-            query {languages(first: 3) {
-                totalCount
-                edges {node {id name}}}
+            query {
+                languages(first: 3) {
+                    totalCount
+                    edges {
+                        node {
+                            id name
+                        }
+                    }
+                }
             }
             ''',
             **args

@@ -2,13 +2,11 @@
 from graphene import *
 from graphene import relay
 
-from pokemon_v2 import models
 from ..connections import getConnection, getPage
 from ..base import BaseConnection, BaseOrder, BaseName, BaseEffect, BaseVerboseEffect, BaseFlavorText
 from ..loader_key import LoaderKey
 from ..relay_node import RelayNode
 from ..field import TranslationList
-from ..where import Where
 
 
 class Move(ObjectType):
@@ -174,22 +172,27 @@ class MoveConnection(BaseConnection, relay.Connection):
         node = Move
 
 
-class MoveOrderField(Enum):
-    """Properties by which move connections can be ordered."""
-
-    NAME = "name"
-
-    @property
-    def description(self):
-        if self == MoveOrderField.NAME:
-            return "Order by name."
-
-
-class MoveOrder(BaseOrder):
-    """Ordering options for move connections."""
-    field = MoveOrderField(
-        description="The field to order edges by.",
-        required=True
+class MoveOrdering(BaseOrder):
+    sort = InputField(
+        Enum('MoveSort', [
+            ("ACCURACY", "accuracy"),
+            ("EFFECT_CHANCE", "move_effect_chance"),
+            ("PP", "pp"),
+            ("PRIORITY", "priority"),
+            ("POWER", "power"),
+            ("META_AILMENT_CHANCE", "movemeta__ailment_chance"),
+            ("META_CRIT_RATE", "movemeta__crit_rate"),
+            ("META_DRAIN", "movemeta__drain"),
+            ("META_FLINCH_CHANCE", "movemeta__flinch_chance"),
+            ("META_HEALING", "movemeta__healing"),
+            ("META_MIN_HITS", "movemeta__min_hits"),
+            ("META_MAX_HITS", "movemeta__max_hits"),
+            ("META_MIN_TURNS", "movemeta__min_turns"),
+            ("META_MAX_TURNS", "movemeta__max_turns"),
+            ("META_STAT_CHANCE", "movemeta__stat_chance"),
+            ("NAME", "name"),
+        ]),
+        description="The field to sort by."
     )
 
 

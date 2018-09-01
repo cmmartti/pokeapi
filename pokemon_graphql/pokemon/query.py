@@ -1,22 +1,25 @@
 # -*- coding: utf-8 -*-
-from graphene import Argument, relay
+from graphene import relay, Argument, List
 
 from pokemon_v2 import models
 from ..base import BaseQuery
 from ..connections import getConnection
-from .types import PokemonConnection, PokemonOrder
-from ..where import Where
+from .connection import (
+    PokemonConnection as Connection,
+    PokemonOrdering as Ordering,
+    PokemonWhere as Where
+)
 
 
 class Query(BaseQuery):
     pokemons = relay.ConnectionField(
-        PokemonConnection,
-        description="A list of Pokémon.",
-        order_by=Argument(PokemonOrder),
-        where=Argument(Where)
+        Connection,
+        description="A list of Pokémon varieties.",
+        where=Argument(Where),
+        order_by=List(Ordering)
     )
 
     def resolve_pokemons(self, info, **kwargs):
         q = models.Pokemon.objects.all()
         q = Where.apply(q, **kwargs.get("where", {}))
-        return getConnection(q, PokemonConnection, **kwargs)
+        return getConnection(q, Connection, **kwargs)

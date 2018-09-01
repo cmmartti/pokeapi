@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from graphene import Int, String, Boolean, Field, List, ObjectType, Enum, relay, Argument
-from graphene import lazy_import
+from graphene import *
+from graphene import relay
 
 from pokemon_v2 import models
 from ..connections import getConnection, getPage
@@ -92,6 +92,13 @@ class NatureConnection(BaseConnection, relay.Connection):
         node = Nature
 
 
+class NatureOrdering(BaseOrder):
+    sort = InputField(
+        Enum('NatureSort', [("NAME", "name")]),
+        description="The field to sort by."
+    )
+
+
 class NatureName(BaseName):
     class Meta:
         interfaces = (RelayNode, )
@@ -100,24 +107,6 @@ class NatureName(BaseName):
     def get_node(cls, info, id):
         return info.context.loaders.naturename.load(id)
 
-
-class NatureOrderField(Enum):
-    """Properties by which nature connections can be ordered."""
-
-    NAME = "name"
-
-    @property
-    def description(self):
-        if self == NatureOrderField.NAME:
-            return "Order by name."
-
-
-class NatureOrder(BaseOrder):
-    """Ordering options for nature connections."""
-    field = NatureOrderField(
-        description="The field to order edges by.",
-        required=True
-    )
 
 class NatureStatChange(ObjectType):
     max_change = Int(description="The amount of change.")

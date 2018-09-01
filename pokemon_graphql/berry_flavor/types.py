@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from graphene import *
-from graphene import relay
 
-from pokemon_v2 import models
 from ..base import BaseName
 from ..interfaces import SimpleEdge
 from ..loader_key import LoaderKey

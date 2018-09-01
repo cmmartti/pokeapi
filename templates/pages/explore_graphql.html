@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load render_bundle from webpack_loader %}
+
+{% block menu-explore %}class="active"{% endblock %}
+
+{% block mainbody %}
+
+<link href="/static/pokemon/css/graphiql.min.css" rel="stylesheet">
+<main id="explore-graphql">
+
+    <!-- {% if alert %}
+    <div class="alert">
+        <div class="alert__message" role="alert">{{ alert.message|safe }}</div>
+    </div>
+    {% endif %}
+
+	<div>
+		<a href="/docs/graphql">Read the Docs</a> |
+		<a href="/explore/rest">Explore the RESTful API</a>
+    </div> -->
+    <div id="graphiql" class="graphiql-ide"></div>
+    <script>
+        var parameters = {
+            query: '{{ query|escapejs }}',
+            response: '{{ result|escapejs }}',
+            {% if variables %}
+            variables: '{{ variables|escapejs }}',
+            {% endif %}
+            {% if operation_name %}
+            operationName: '{{ operation_name|escapejs }}',
+            {% endif %}
+        };
+    </script>
+    {% render_bundle 'explore_graphql' %}
+</main>
+
+{% endblock %}

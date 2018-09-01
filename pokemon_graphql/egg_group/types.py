@@ -8,7 +8,6 @@ from ..base import BaseConnection, BaseOrder, BaseName
 from ..loader_key import LoaderKey
 from ..relay_node import RelayNode
 from ..field import TranslationList
-from ..where import Where
 
 
 class EggGroup(ObjectType):
@@ -22,11 +21,13 @@ class EggGroup(ObjectType):
         description="The names of this egg group listed in different languages."
     )
     pokemon_species = relay.ConnectionField(
-        lazy_import("pokemon_graphql.pokemon_species.types.PokemonSpeciesConnection"),
+        lazy_import("pokemon_graphql.pokemon_species.connection.PokemonSpeciesConnection"),
         description="A list of all Pokémon species that are members of this egg group.",
-        where=Argument(Where),
-        order_by=Argument(lazy_import(
-            "pokemon_graphql.pokemon_species.types.PokemonSpeciesOrder"
+        where=Argument(
+            lazy_import("pokemon_graphql.pokemon_species.connection.PokemonSpeciesWhere")
+        ),
+        order_by=Argument(List(
+            lazy_import("pokemon_graphql.pokemon_species.connection.PokemonSpeciesOrdering")
         ))
     )
 
@@ -35,7 +36,7 @@ class EggGroup(ObjectType):
         return info.context.loaders.egggroup_names.load(key)
 
     def resolve_pokemon_species(self, info, **kwargs):
-        from ..pokemon_species.types import PokemonSpeciesConnection
+        from ..pokemon_species.connection import PokemonSpeciesConnection
 
         q = models.PokemonSpecies.objects.filter(pokemonegggroup__egg_group_id=self.id)
         return getConnection(q, PokemonSpeciesConnection, **kwargs)
@@ -53,23 +54,10 @@ class EggGroupConnection(BaseConnection, relay.Connection):
         node = EggGroup
 
 
-class EggGroupOrderField(Enum):
-    """Properties by which egg group connections can be ordered."""
-
-    NAME = "name"
-
-    @property
-    def description(self):
-        if self == EggGroupOrderField.NAME:
-            return "Order by name."
-
-
-class EggGroupOrder(BaseOrder):
-    """Ordering options for egg group connections."""
-
-    field = EggGroupOrderField(
-        description="The field to order edges by.",
-        required=True
+class EggGroupOrdering(BaseOrder):
+    sort = InputField(
+        Enum('EggGroupSort', [("NAME", "name")]),
+        description="The field to sort by."
     )
 
 

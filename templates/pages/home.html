@@ -1,293 +1,185 @@
 {% extends "base.html" %}
 {% load humanize %}
+<!-- {% load static %} -->
+
+{% block menu-home %}class="active"{% endblock %}
+
 {% block mainbody %}
 
-    <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <div class="navbar-brand">
-                <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://pokeapi.co" data-text="Pokéapi - the Pokémon RESTful API " data-via="phalt_" data-related="phalt_">Tweet</a>
-                <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
-            </div>
+<main id="home">
+    <header class="title-banner">
+        <div class="title-banner__container">
+            <h1>Pokéapi</h1>
+            <h2>The REST and GraphQL Pokémon API</h2>
+            <p>Over <strong>{{ total_views|intcomma }}</strong> API calls received!</p>
         </div>
-        <div class="collapse navbar-collapse navbar-right">
-          <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Home</a></li>
-            <li><a href="/about/">About</a></li>
-            <li><a href="/docsv2/">Documentation</a></li>
-          </ul>
-        </div><!--/.nav-collapse -->
-      </div>
-    </div>
-
-<section id="home">
-
-    <div class="header">
-        <h1>Pokéapi</h1>
-        <h2>The RESTful Pokémon API</h2>
-        <h4>Over <span class="count">{{ total_views|intcomma }}</span> API calls received!</h4>
-    </div>
+    </header>
 
     {% if alert %}
-    <div class="container">
-        <div class="row" style="padding-top:20px;text-align:center;">
-            <div class="col-md-2">
-            </div>
-            <div class="col-md-8">
-            <div class="alert alert-danger" role="alert">{{ alert.message|safe }}</div>
-            </div>
-            <div class="col-md-2">
-            </div>
-        </div>
+    <div class="alert">
+        <div class="alert__message" role="alert">{{ alert.message|safe }}</div>
     </div>
     {% endif %}
 
     <div class="cta">
-        <p>Finally; all the Pokémon data you'll ever need, in one place,<br /> and easily accessible through a modern RESTful API.</p>
-        <p>Whats new in V2? Check out the <a href="/docsv2/">docs</a>!</p>
+        <div class="cta__container">
+            <p>
+                All the Pokémon data you'll ever need in one place,<br>
+                easily accessible through two modern APIs:<br>
+                <a href="/docsv2">RESTful API</a> • <a href="/docs-graphql">GraphQL API</a>
+            </p>
+        </div>
     </div>
 
-
-    <div class="container">
-
-
-        <div class="row">
-
-            <div class="col-md-10 center-block">
-
-                <div class="center">
-                    <h1>
-                        Try it now!
-                    </h1>
-                    <div class="input-group pad_top">
-                        <span class="input-group-addon url">http://pokeapi.co/api/v2/</span>
-                        <input id="interactive" type="text" class="form-control" placeholder="pokemon/1/">
-                        <span class="input-group-btn"><button onClick="interactive_call();return false;" class="btn btn-primary">submit</button></span>
-                    </div>
-                </div>
-
-                <small>Need a hint? try <a href="#" onClick="update('pokemon/1/');return false;"><i>pokemon/1/</i></a> or <a href="#" onClick="update('type/3/');return false;"><i>type/3/</i></a> or <a href="#" onClick="update('ability/4/');return false;"><i>ability/4/</i></a></small>
-                <p class="lead pad_top">Resource for <span id="interactive_name">Bulbasaur</span></p>
-
-                <pre id="interactive_output" class="pre-scrollable">
-{
-    "id": 1,
-    "name": "bulbasaur",
-    "base_experience": 64,
-    "height": 7,
-    "is_default": true,
-    "order": 1,
-    "weight": 69,
-    "abilities": [
-        {
-            "is_hidden": true,
-            "slot": 3,
-            "ability": {
-                "name": "chlorophyll",
-                "url": "http://pokeapi.co/api/v2/ability/34/"
-            }
-        }
-    ],
-    "forms": [
-        {
-            "name": "bulbasaur",
-            "url": "http://pokeapi.co/api/v2/pokemon-form/1/"
-        }
-    ],
-    "game_indices": [
-        {
-            "game_index": 1,
-            "version": {
-                "name": "white-2",
-                "url": "http://pokeapi.co/api/v2/version/22/"
-            }
-        }
-    ],
-    "held_items": [],
-    "location_area_encounters": [],
-    "moves": [
-        {
-            "move": {
-                "name": "captivate",
-                "url": "http://pokeapi.co/api/v2/move/445/"
-            },
-            "version_group_details": [
-                {
-                    "level_learned_at": 0,
-                    "version_group": {
-                        "name": "heartgold-soulsilver",
-                        "url": "http://pokeapi.co/api/v2/version-group/10/"
-                    },
-                    "move_learn_method": {
-                        "name": "machine",
-                        "url": "http://pokeapi.co/api/v2/move-learn-method/4/"
-                    }
-                },
-                {
-                    "level_learned_at": 0,
-                    "version_group": {
-                        "name": "platinum",
-                        "url": "http://pokeapi.co/api/v2/version-group/9/"
-                    },
-                    "move_learn_method": {
-                        "name": "machine",
-                        "url": "http://pokeapi.co/api/v2/move-learn-method/4/"
-                    }
-                },
-                {
-                    "level_learned_at": 0,
-                    "version_group": {
-                        "name": "diamond-pearl",
-                        "url": "http://pokeapi.co/api/v2/version-group/8/"
-                    },
-                    "move_learn_method": {
-                        "name": "machine",
-                        "url": "http://pokeapi.co/api/v2/move-learn-method/4/"
-                    }
-                }
-            ]
-        }
-    ],
-    "species": {
-        "name": "bulbasaur",
-        "url": "http://pokeapi.co/api/v2/pokemon-species/1/"
-    },
-    "stats": [
-        {
-            "base_stat": 45,
-            "effort": 0,
-            "stat": {
-                "name": "speed",
-                "url": "http://pokeapi.co/api/v2/stat/6/"
-            }
-        }
-    ],
-    "types": [
-        {
-            "slot": 2,
-            "type": {
-                "name": "poison",
-                "url": "http://pokeapi.co/api/v2/type/4/"
-            }
-        }
-    ]
-}
-                </pre>
-
+    <div class="page-container homepage-grid">
+        <div class="intro">
+            <h3>What is this?</h3>
+            <div>
+                <p>This is a set of two APIs linked to an extensive database
+                    detailing everything to do with the Pokémon main game series. We've covered everything from Pokémon to Berry Flavors, and all text resources are fully translated into the games' originally published languages.</p>
+                <p>These APIs acts as the single source for the Internet's Pokémon data needs, and we strive to keep them up-to-date at all times.</p>
+                <p>For more information about the project, go to the <a href="/about">About</a> page.</p>
             </div>
-
-        </div><!--interactive row-->
-
-        <div class="row">
-            <div class="col-md-10 center-block center pad_top pad_bot">
-                <a href="https://www.digitalocean.com/?refcode=eab2fea41bc6" target="none"><img class="do_image" src="/static/do-logo.png"></a>
+        </div>
+        <div class="which-api">
+            <h3 class="which-api__title">Which API should I use?</h3>
+            <p>Use whichever one you're most familiar with, unless you need the more powerful filtering or pagination features of the GraphQL API. Each API has access to the same data, but uses different access methods.</p>
+            <p>If you're not sure, take a look at this comparison:</p>
         </div>
 
-
-        <div class="row">
-
-            <div class="col-md-10 center-block">
-
-                <div class="row">
-
-                    <div class="col-md-4">
-                        <p class="lead center">
-                            What is this?
-                        </p>
-                        <div class="well">
-                            <p>
-                                This is a full RESTful API linked to an extensive database
-                                detailing everything about the Pokémon main game series.
-                            </p>
-                            <p>
-                                We've covered everything from Pokémon to Berry Flavors.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <p class="lead center">
-                            Where do I start?
-                        </p>
-                        <div class="well">
-                            <p>
-                                We have awesome <a href="/docsv2/">documentation</a> on
-                                how to use this API. It takes minutes to get started.
-                            </p>
-                            <p>
-                                This API will always be publicly available and will
-                                never require any extensive setup process to consume.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <p class="lead center">
-                            Keep PokéAPI Running
-                        </p>
-                        <div class="well">
-                            <p>PokéAPI costs around $80 a month to run. We want to keep this free and scalable for as long as possible!
-                            </p>
-                            <p><b>If you use PokéAPI for teaching or for building apps, consider donating today!</b></p>
-                            <form action="/stripe/donation" method="POST">
-                              <script
-                                src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-                                data-key="{{stripe_key}}"
-                                data-image="https://i.imgur.com/Jya9cm0.png"
-                                data-name="pokeapi.co"
-                                data-description="Donate and keep pokeapi alive!"
-                                data-amount="1000"
-                                data-panel-label="Donate">
-                              </script>
-                            </form></p></div>
-                    </div>
-                </div>
+        <div class="comparison comparison--restful">
+            <h2 class="comparison__title">RESTful API (V2)</h2>
+            <div class="comparison__links">
+                <a href="/docsv2/explore">Explore the API</a> •
+                <a href="/docsv2">Read the Docs</a>
             </div>
-        </div><!-- end bottom -->
-    </div><!-- /.container -->
 
-</section>
+            <h3>What is REST?</h3>
+            <p>Only the most common style of web API used today. It's not an official standard, merely a set of loose conventions used to implement an API based on HTTP in a typically ad-hoc fashion.</p>
+            <p>In <strong>RE</strong>presentational <strong>S</strong>tate <strong>T</strong>ransfer APIs, each resource is assigned to a URL, and different actions can be taken on a particular resource by using the HTTP verbs GET, POST, etc. (though Pokéapi only has GET). Data is returned in JSON format, either as scalar strings/numbers, or as a hyperlink to another resource. Basic filtering is accomplished by requesting a specific ID or by adding GET parameters to the end of the URL, and pagination is accomplished using <code>limit</code> and <code>offset</code> parameters.
+            </p>
 
-<script>
+            <p>Example requests (click the request links to view the response JSON data):</p>
+            <ul>
+                <li>
+                    The <a href="/docsv2/#pokemon">Pokémon</a> with ID 1: <br>
+                    <code>
+                        GET <a href="/api/v2/pokemon/1">https://pokeapi.co/api/v2/pokemon/1</a>
+                    </code>
+                </li>
+                <li>
+                   The first 10 <a href="/docsv2/#abilities">abilities</a>: <br>
+                    <code>
+                        GET <a href="/api/v2/ability/?limit=10">https://pokeapi.co/api/v2/ability/?limit=10</a>
+                    </code>
+                </li>
+            </ul>
 
-    function update (call) {
+            <h3>The Good</h3>
+            <p>It's extremely simple to use, and network caching is automatic. All you need to get started is a plain old HTTP request to the API.</p>
 
-        jQuery('#interactive').val(call);
-        interactive_call();
+            <h3>The Bad</h3>
+            <p>It doesn't scale as well. Nested resources must be individually fetched by the client, creating an inefficient <code>n+1</code> problem where each additional object requires one or more API requests. Furthermore, requirements like complex search filters and aggregate data queries are impossible to meet without complicated and inefficient solutions that fetch <em>all</em> available data and calculate results on the client. Finally, data is frequently overfetched, since there's no way to specify which fields are needed.
+            </p>
+        </div>
+
+        <div class="comparison comparison--graphql">
+            <h2 class="comparison__title">GraphQL API (Beta)</h2>
+            <div class="comparison__links">
+                <a href="/docs-graphql/explore">Explore the API</a> •
+                <a href="/docs-graphql">Read the Docs</a>
+            </div>
+
+            <h3>What is GraphQL?</h3>
+            <p>GraphQL is a strongly-typed query language for APIs that allows you to request only what you need from a single endpoint by writing a query that describes the shape of the response. A simple query is:</p>
+<pre>
+query {
+  genders {
+    name
+    pokemonSpecies(first: 1) {
+        totalCount
     }
+  }
+}
+</pre>
+            <p><a href="/graphql?query=query {%0A%20 genders {%0A%20%20%20 name%0A%20%20%20 pokemonSpecies(first%3A 1) {%0A%20%20%20%20%20 totalCount%0A%20%20%20 }%0A%20 }%0A}">View the result of this query.</a>
+            </p>
 
-    function interactive_call() {
+            <hr>
 
-        var content = jQuery('#interactive').val() || 'pokemon/1/';;
-
-        var call_url = 'api/v2/' + content;
-
-        jQuery.ajax({
-
-            dataType: 'json',
-            url: call_url,
-            context: document.body
-
-        }).complete( function(data) {
-
-            if(data['status'] == 200){
-
-                var d = jQuery.parseJSON(data['responseText']);
-                jQuery('#interactive_name').html(d['name']);
-                jQuery('#interactive_output').text(JSON.stringify(d, null, '\t'));
-
-            } else if (data['status'] == 404) {
-
-                jQuery('#interactive_output').text(data['status'] + ' ' + data['statusText']);
-            }
-        });
+            <p>Pokéapi is also fully compatible with <a href="https://facebook.github.io/relay/">Relay</a>, which means it has full support for <a href="https://facebook.github.io/relay/graphql/connections.htm">connections</a> and cursor-based pagination. Here's a query that uses a connection:</p>
+<pre>
+query {
+  pokemons(first: 2) {
+    edges {
+      cursor
+      node {
+        name
+        height
+        weight
+        types {
+          slot
+          node {name}
+        }
+      }
     }
+  }
+}
+</pre>
+            <p><a href="/graphql?query=query {%0A%20 pokemons(first%3A 2) {%0A%20%20%20 edges {%0A%20%20%20%20%20 cursor%0A%20%20%20%20%20 node {%0A%20%20%20%20%20%20%20 name%0A%20%20%20%20%20%20%20 height%0A%20%20%20%20%20%20%20 weight%0A%20%20%20%20%20%20%20 types {%0A%20%20%20%20%20%20%20%20%20 slot%0A%20%20%20%20%20%20%20%20%20 node {name}%0A%20%20%20%20%20%20%20 }%0A%20%20%20%20%20 }%0A%20%20%20 }%0A%20 }%0A}">View the result of this query.</a>
+            </p>
 
-</script>
+            <hr>
+
+            <h3>The Good</h3>
+            <p>It handles complexity well. The heavy lifting is offloaded to the server, leaving you with exactly the results you need; no more, no less. It supports complex filtering, pagination, and data aggregation, and it has well-supported JavaScript client libraries like
+                <a href="https://facebook.github.io/relay/">Relay</a>
+                (for <a href="https://reactjs.org/">React</a>)
+                or <a href="https://www.apollographql.com/client">Apollo Client</a>
+                (for React,
+                <a href="https://vuejs.org/">Vue</a>,
+                <a href="https://angular.io/">Angular</a>,
+                Android, iOS, and others). It also offers a nifty tool called <a href="/graphql">GraphiQL</a>, an in-browser IDE for exploring GraphQL that lets you run and inspect alongside comprehensive documentation.
+            </p>
+
+            <h3>The Bad</h3>
+            <p>It's a lot more complex. Caching solutions must be implemented manually, and error handling can be slightly more complicated. There's a lot more to learn, so it takes a bit longer to get started. Finally, it's still fairly new (the first stable release of GraphQL was in October 2016), so some languages might not have client libraries yet, particularly on the server.</p>
+        </div>
+
+        <div class="sponsored-by">
+            <a href="https://www.digitalocean.com/?refcode=eab2fea41bc6" target="none">
+                <img class="sponsored-by__image" src="/static/do-logo.png">
+            </a>
+        </div>
+
+        <div class="source">
+            <p>These APIs will always be publicly available and will
+                never require any extensive setup process to consume.
+            </p>
+            <p>The source code is fully open and licensed under the <a href="https://github.com/PokeAPI/pokeapi/blob/master/LICENSE.rst">BSD</a> license, and is available at <a href="https://github.com/PokeAPI/pokeapi">GitHub</a>.
+            </p>
+        </div>
+
+        <div class="donate">
+            <h4>Keep PokéAPI Running</h4>
+            <div>
+                <p>PokéAPI costs around $80 a month to run. We want to keep this free and scalable for as long as possible!
+                </p>
+                <p><strong>If you use PokéAPI for teaching or for building apps, consider donating today!</strong></p>
+                <form action="/stripe/donation" method="POST">
+                    <script
+                        src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+                        data-key="{{stripe_key}}"
+                        data-image="https://i.imgur.com/Jya9cm0.png"
+                        data-name="pokeapi.co"
+                        data-description="Donate and keep pokeapi alive!"
+                        data-amount="1000"
+                        data-panel-label="Donate">
+                    </script>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
 
 {% endblock %}

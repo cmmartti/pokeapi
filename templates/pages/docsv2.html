@@ -3,30 +3,23 @@
 
 {% block docstitle %}
 
-    <h1>Pokeapi V2 Documentation</h1>
-
-{% endblock %}
-
-{% block docsversionstate %}
-
-    <li><a href="/docsv1/">V1</a></li>
-    <li class="active"><a href="#">V2</a></li>
+    <h1>Pokéapi V2 Documentation</h1>
 
 {% endblock %}
 
 {% block docsnav %}
 
-    <ul>
+    <ul class="side-toc">
         <li><a href="#info">Information</a></li>
         <li><a href="#fairuse">Fair Use</a></li>
         <li><a href="#slack">Slack</a></li>
         <li><a href="#wrap">Wrappers</a></li>
 
-        <hr>
+        <li class="separator"></li>
 
         <li><a href="#resource-lists">Resource Lists</a></li>
 
-        <hr>
+        <li class="separator"></li>
 
         <li class="parent"><a href="#berries-section">Berries</a>
             <ul>
@@ -132,7 +125,7 @@
             </ul>
         </li>
 
-        <hr>
+        <li class="separator"></li>
 
         <li><a href="#common-models">Common Models</a></li>
     </ul>
@@ -141,6 +134,9 @@
 
 
 {% block docsbody %}
+
+    {% include "restinfo.html" %}
+    {% include "fairuse.html" %}
 
     <h2 id="wrap">Wrappers</h2>
 

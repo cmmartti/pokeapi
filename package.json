@@ -1,27 +1,48 @@
 {
-  "name": "pokeapi",
-  "version": "2.0.0",
-  "description": "A RESTful api for pokemon data",
-  "dependencies": {
-    "browser-sync": "^2.10.1",
-    "gulp": "^3.9.0",
-    "gulp-concat": "^2.6.0",
-    "gulp-cssnano": "^2.0.0",
-    "gulp-flatten": "^0.2.0",
-    "gulp-jshint": "^2.0.0",
-    "gulp-plumber": "^1.0.1",
-    "gulp-sass": "^2.1.1",
-    "gulp-uglify": "^1.5.1",
-    "jshint": "^2.8.0",
-    "jshint-stylish": "^2.1.0",
-    "opencollective": "^1.0.3"
-  },
-  "collective": {
-    "type": "opencollective",
-    "url": "https://opencollective.com/pokeapi",
-    "logo": "https://opencollective.com/opencollective/logo.txt"
-  },
-  "scripts": {
-    "postinstall": "opencollective postinstall"
-  }
+    "name": "pokeapi",
+    "version": "2.0.0",
+    "description": "A RESTful api for pokemon data",
+    "dependencies": {
+        "babel-polyfill": "^6.26.0",
+        "graphiql": "^0.11.11",
+        "isomorphic-fetch": "^2.2.1",
+        "normalize.css": "^8.0.0",
+        "opencollective": "^1.0.3",
+        "react": "^16.4.1",
+        "react-dom": "^16.4.1"
+    },
+    "collective": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/pokeapi",
+        "logo": "https://opencollective.com/opencollective/logo.txt"
+    },
+    "scripts": {
+        "postinstall": "opencollective postinstall",
+        "watch-css": "gulp watch",
+        "build-css:prod": "gulp sass",
+        "watch-js": "webpack --mode development --watch --progress --colors",
+        "build-js:prod": "webpack --mode production  --progress --colors",
+        "watch": "concurrently --kill-others \"npm run watch-css\"      \"npm run watch-js\"",
+        "build:prod": "concurrently --kill-others \"npm run build-css:prod\" \"npm run build-js:prod\""
+    },
+    "devDependencies": {
+        "babel": "^6.23.0",
+        "babel-core": "^6.26.3",
+        "babel-loader": "^7.1.5",
+        "babel-plugin-transform-class-properties": "^6.24.1",
+        "babel-plugin-transform-react-jsx": "^6.24.1",
+        "babel-preset-env": "^1.7.0",
+        "concurrently": "^3.6.0",
+        "gulp": "^3.9.1",
+        "gulp-autoprefixer": "^5.0.0",
+        "gulp-minify-css": "^1.2.4",
+        "gulp-rename": "^1.4.0",
+        "gulp-sass": "^4.0.1",
+        "gulp-util": "^3.0.8",
+        "node-sass": "^4.9.2",
+        "remove-flow-types-loader": "^1.1.0",
+        "webpack": "^4.16.0",
+        "webpack-bundle-tracker": "^0.3.0",
+        "webpack-cli": "^3.1.0"
+    }
 }

@@ -81,20 +81,17 @@ class PokemonTests(django.test.TestCase, APIData):
         sprites_data = json.loads(pokemon_sprites.sprites)
         pokemon_game_index = self.setup_pokemon_game_index_data(pokemon=pokemon, game_index=10)
 
-        # To test issue #85, we will create one move that has multiple
-        # learn levels in different version groups.  Later, we'll
-        # assert that we only got one move record back.
         pokemon_move = self.setup_move_data(name='mv for pkmn')
         pokemon_moves = []
         for move in range(0, 4):
-            version_group = self.setup_version_group_data(
-                name='ver grp '+str(move)+' for pkmn')
-            new_move = self.setup_pokemon_move_data(
-                    pokemon=pokemon,
-                    move=pokemon_move,
-                    version_group=version_group,
-                    level=move)
-            pokemon_moves.append(new_move)
+            pokemon_moves.append(self.setup_pokemon_move_data(
+                pokemon=pokemon,
+                move=pokemon_move,
+                version_group=self.setup_version_group_data(
+                    name='ver grp ' + str(move) + ' for pkmn'
+                ),
+                level=move
+            ))
 
         encounter_method = self.setup_encounter_method_data(name='encntr mthd for lctn area')
         location_area1 = self.setup_location_area_data(name='lctn1 area for base pkmn')
@@ -119,7 +116,7 @@ class PokemonTests(django.test.TestCase, APIData):
         client = Client(schema)
         executed = client.execute('''
             query {
-                pokemons(first: 1, where: {name: "%s"}) {
+                pokemons(first: 1, where: {name: {query: "%s"}}) {
                     edges {
                         node {
                             id name

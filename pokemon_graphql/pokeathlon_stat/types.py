@@ -25,7 +25,7 @@ class PokeathlonStat(ObjectType):
         lambda: PokeathlonStatAffectNatureConnection,
         description="A list of natures which affect this Pokéathlon stat.",
         where=Argument(lambda: PokeathlonStatAffectNatureWhere),
-        order_by=Argument(lambda: PokeathlonStatAffectNatureOrder)
+        order_by=Argument(List(lambda: PokeathlonStatAffectNatureOrdering))
     )
 
     def resolve_names(self, info, **kwargs):
@@ -79,25 +79,10 @@ class PokeathlonStatAffectNatureConnection(BaseConnection, relay.Connection):
         )
 
 
-class PokeathlonStatAffectNatureOrderField(Enum):
-    """Properties by which Pokéathlon stat affect nature connections can be ordered."""
-    NAME = "name"
-    MAX_CHANGE = "max_change"
-
-    @property
-    def description(self):
-        if self == PokeathlonStatAffectNatureOrderField.NAME:
-            return "Order by the name of the move."
-        if self == PokeathlonStatAffectNatureOrderField.MAX_CHANGE:
-            return "Order by the amount of maxChange each nature causes in the Pokéathlon stat."
-
-
-class PokeathlonStatAffectNatureOrder(BaseOrder):
-    """Ordering options for Pokéathlon stat affect nature connections."""
-
-    field = PokeathlonStatAffectNatureOrderField(
-        description="The field to order edges by.",
-        required=True
+class PokeathlonStatAffectNatureOrdering(BaseOrder):
+    sort = InputField(
+        Enum('PokeathlonStatAffectNatureSort', [("MAX_CHANGE", "max_change"), ("NAME", "name")]),
+        description="The field to sort by."
     )
 
 

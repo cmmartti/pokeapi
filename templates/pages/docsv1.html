@@ -7,20 +7,13 @@
 
 {% endblock %}
 
-{% block docsversionstate %}
-
-    <li class="active"><a href="#">V1</a></li>
-    <li><a href="/docsv2/">V2</a></li>
-
-{% endblock %}
-
 {% block docsnav %}
 
-    <ul>
+    <ul class="side-toc">
         <li><a href="#info">Information</a></li>
         <li><a href="#slack">Slack</a></li>
         <li><a href="#wrap">Wrappers</a></li>
-        <hr>
+        <li class="separator"></li>
         <li><a href="#pokedex">Pokedex</a></li>
         <li><a href="#pokemon">Pokemon</a></li>
         <li><a href="#types">Types</a></li>
@@ -35,6 +28,9 @@
 {% endblock %}
 
 {% block docsbody %}
+
+    {% include "restinfo.html" %}
+    {% include "fairuse.html" %}
 
     <h2 id="wrap">Wrappers</h2>
 
@@ -59,20 +55,20 @@
 
     <h3>GET pokedex/1/</h3>
 
-    <pre>
+    <pre><code>
 {
-"created": "2013-11-09T15:14:48.957604",
-"modified": "2013-11-09T15:14:48.957565",
-"name": "national",
-"pokemon": [
-{
-"name": "pidgeotto",
-"resource_uri": "api/v1/pokemon/17/"
-},
-...
-]
+    "created": "2013-11-09T15:14:48.957604",
+    "modified": "2013-11-09T15:14:48.957565",
+    "name": "national",
+    "pokemon": [
+        {
+            "name": "pidgeotto",
+            "resource_uri": "api/v1/pokemon/17/"
+        },
+        ...
+    ]
 }
-    </pre>
+    </code></pre>
 
 <!--                     <p>Fields:</p>
     <ul>
@@ -121,86 +117,86 @@
     <h3> GET pokemon/</h3>
     <p>Returns a list of pokemon</p>
     <h3> GET pokemon/{id or name}/</h3>
-    <pre>
+    <pre><code>
 {
-"abilities": [
-{
-"name": "overgrow",
-"resource_uri": "/api/v1/ability/1/"
-},
-{
-"name": "chlorophyll",
-"resource_uri": "/api/v1/ability/2/"
+    "abilities": [
+        {
+            "name": "overgrow",
+            "resource_uri": "/api/v1/ability/1/"
+        },
+        {
+            "name": "chlorophyll",
+            "resource_uri": "/api/v1/ability/2/"
+        }
+    ],
+    "attack": 49,
+    "catch_rate": 45,
+    "created": "2013-11-02T12:08:25.745455",
+    "defense": 49,
+    "egg_cycles": 21,
+    "egg_groups": [
+        {
+            "name": "Monster",
+            "resource_uri": "/api/v1/egg/1/"
+        },
+        {
+            "name": "Grass",
+            "resource_uri": "/api/v1/egg/8/"
+        }
+    ],
+    "ev_yield": "1 Sp Atk",
+    "evolutions": {
+        "level": 16,
+        "method": "level up",
+        "resource_uri": "/api/v1/pokemon/2/",
+        "to": "Ivysaur"
+    },
+    "exp": 64,
+    "growth_rate": "ms",
+    "happiness": 70,
+    "height": "2'4",
+    "hp": 45,
+    "male_female_ratio": "87.5/12.5",
+    "modified": "2013-11-02T13:28:04.914889",
+    "moves": [
+        {
+            "learn_type": "other",
+            "name": "Tackle",
+            "resource_uri": "/api/v1/move/1/"
+        },
+        {
+            "learn_type": "other",
+            "name": "Growl",
+            "resource_uri": "/api/v1/move/2/"
+        },
+        {
+            "learn_type": "level up",
+            "level": 10,
+            "name": "Vine whip",
+            "resource_uri": "/api/v1/move/3/"
+        }
+    ],
+    "name": "Bulbasaur",
+    "national_id": 1,
+    "resource_uri": "/api/v1/pokemon/4/",
+    "sp_atk": 65,
+    "sp_def": 65,
+    "species": "seed pokemon",
+    "speed": 45,
+    "total": 318,
+    "types": [
+        {
+            "name": "grass",
+            "resource_uri": "/api/v1/type/5/"
+        },
+        {
+            "name": "poison",
+            "resource_uri": "/api/v1/type/8/"
+        }
+    ],
+    "weight": "15.2lbs"
 }
-],
-"attack": 49,
-"catch_rate": 45,
-"created": "2013-11-02T12:08:25.745455",
-"defense": 49,
-"egg_cycles": 21,
-"egg_groups": [
-{
-"name": "Monster",
-"resource_uri": "/api/v1/egg/1/"
-},
-{
-"name": "Grass",
-"resource_uri": "/api/v1/egg/8/"
-}
-],
-"ev_yield": "1 Sp Atk",
-"evolutions": {
-"level": 16,
-"method": "level up",
-"resource_uri": "/api/v1/pokemon/2/",
-"to": "Ivysaur"
-},
-"exp": 64,
-"growth_rate": "ms",
-"happiness": 70,
-"height": "2'4",
-"hp": 45,
-"male_female_ratio": "87.5/12.5",
-"modified": "2013-11-02T13:28:04.914889",
-"moves": [
-{
-"learn_type": "other",
-"name": "Tackle",
-"resource_uri": "/api/v1/move/1/"
-},
-{
-"learn_type": "other",
-"name": "Growl",
-"resource_uri": "/api/v1/move/2/"
-},
-{
-"learn_type": "level up",
-"level": 10,
-"name": "Vine whip",
-"resource_uri": "/api/v1/move/3/"
-}
-],
-"name": "Bulbasaur",
-"national_id": 1,
-"resource_uri": "/api/v1/pokemon/4/",
-"sp_atk": 65,
-"sp_def": 65,
-"species": "seed pokemon",
-"speed": 45,
-"total": 318,
-"types": [
-{
-"name": "grass",
-"resource_uri": "/api/v1/type/5/"
-},
-{
-"name": "poison",
-"resource_uri": "/api/v1/type/8/"
-}
-],
-"weight": "15.2lbs"
-}
-    </pre>
+    </code></pre>
 
     <h4>Pokemon</h4>
 
@@ -361,76 +357,76 @@
     <p>Returns a list of types</p>
     <h3> GET type/{id}/ </h3>
 
-    <pre>
+    <pre><code>
 {
-"created": "2013-11-02T12:09:07.305733",
-"id": 3,
-"ineffective": [
-{
-"name": "fire",
-"resource_uri": "/api/v1/type/2/"
-},
-{
-"name": "ice",
-"resource_uri": "/api/v1/type/6/"
-},
-{
-"name": "steel",
-"resource_uri": "/api/v1/type/17/"
-},
-{
-"name": "water",
-"resource_uri": "/api/v1/type/3/"
+    "created": "2013-11-02T12:09:07.305733",
+    "id": 3,
+    "ineffective": [
+        {
+            "name": "fire",
+            "resource_uri": "/api/v1/type/2/"
+        },
+        {
+            "name": "ice",
+            "resource_uri": "/api/v1/type/6/"
+        },
+        {
+            "name": "steel",
+            "resource_uri": "/api/v1/type/17/"
+        },
+        {
+            "name": "water",
+            "resource_uri": "/api/v1/type/3/"
+        }
+    ],
+    "modified": "2013-11-02T13:14:44.369331",
+    "name": "Water",
+    "no_effect": [],
+    "resistance": [
+        {
+            "name": "fire",
+            "resource_uri": "/api/v1/type/2/"
+        },
+        {
+            "name": "ice",
+            "resource_uri": "/api/v1/type/6/"
+        },
+        {
+            "name": "steel",
+            "resource_uri": "/api/v1/type/17/"
+        },
+        {
+            "name": "water",
+            "resource_uri": "/api/v1/type/3/"
+        }
+    ],
+    "resource_uri": "/api/v1/type/3/",
+    "super_effective": [
+        {
+            "name": "fire",
+            "resource_uri": "/api/v1/type/2/"
+        },
+        {
+            "name": "ground",
+            "resource_uri": "/api/v1/type/9/"
+        },
+        {
+            "name": "rock",
+            "resource_uri": "/api/v1/type/13/"
+        }
+    ],
+    "weakness": [
+        {
+            "name": "electric",
+            "resource_uri": "/api/v1/type/4/"
+        },
+        {
+            "name": "grass",
+            "resource_uri": "/api/v1/type/5/"
+        }
+    ]
 }
-],
-"modified": "2013-11-02T13:14:44.369331",
-"name": "Water",
-"no_effect": [],
-"resistance": [
-{
-"name": "fire",
-"resource_uri": "/api/v1/type/2/"
-},
-{
-"name": "ice",
-"resource_uri": "/api/v1/type/6/"
-},
-{
-"name": "steel",
-"resource_uri": "/api/v1/type/17/"
-},
-{
-"name": "water",
-"resource_uri": "/api/v1/type/3/"
-}
-],
-"resource_uri": "/api/v1/type/3/",
-"super_effective": [
-{
-"name": "fire",
-"resource_uri": "/api/v1/type/2/"
-},
-{
-"name": "ground",
-"resource_uri": "/api/v1/type/9/"
-},
-{
-"name": "rock",
-"resource_uri": "/api/v1/type/13/"
-}
-],
-"weakness": [
-{
-"name": "electric",
-"resource_uri": "/api/v1/type/4/"
-},
-{
-"name": "grass",
-"resource_uri": "/api/v1/type/5/"
-}
-]
-}
-    </pre>
+    </code></pre>
 
     <h4>Type</h4>
 
@@ -500,20 +496,20 @@
     <h3> GET move/</h3>
     <p>Returns a list of moves</p>
     <h3> GET move/{id}/ </h3>
-    <pre>
+    <pre><code>
 {
-"accuracy": 100,
-"category": "physical",
-"created": "2013-11-02T12:37:05.266762",
-"description": "A physical attack in which the user charges and slams into the target with its whole body.",
-"id": 1,
-"modified": "2013-11-03T11:51:57.009696",
-"name": "Tackle",
-"power": 50,
-"pp": 35,
-"resource_uri": "/api/v1/move/1/"
+    "accuracy": 100,
+    "category": "physical",
+    "created": "2013-11-02T12:37:05.266762",
+    "description": "A physical attack in which the user charges and slams into the target with its whole body.",
+    "id": 1,
+    "modified": "2013-11-03T11:51:57.009696",
+    "name": "Tackle",
+    "power": 50,
+    "pp": 35,
+    "resource_uri": "/api/v1/move/1/"
 }
-    </pre>
+    </code></pre>
 
     <h4>Move</h4>
 
@@ -583,16 +579,16 @@
     <h3> GET ability/</h3>
     <p>Returns a list of abilities</p>
     <h3> GET ability/{id}/ </h3>
-    <pre>
+    <pre><code>
 {
-"created": "2013-11-02T12:21:28.166682",
-"description": "When a Pokmon with Overgrow uses a Grass-type move, the power will increase by 1.5x if the user has less than or equal to 1/3 of its maximum HP remaining.",
-"id": 1,
-"modified": "2013-11-02T13:27:06.591413",
-"name": "Overgrow",
-"resource_uri": "/api/v1/ability/1/"
+    "created": "2013-11-02T12:21:28.166682",
+    "description": "When a Pokmon with Overgrow uses a Grass-type move, the power will increase by 1.5x if the user has less than or equal to 1/3 of its maximum HP remaining.",
+    "id": 1,
+    "modified": "2013-11-02T13:27:06.591413",
+    "name": "Overgrow",
+    "resource_uri": "/api/v1/ability/1/"
 }
-    </pre>
+    </code></pre>
 
     <h4>Ability</h4>
 
@@ -641,25 +637,25 @@
     <h3> GET egg/</h3>
     <p>Returns a list of egg groups</p>
     <h3> GET egg/{id}/ </h3>
-    <pre>
+    <pre><code>
 {
-"created": "2013-11-02T12:24:55.532023",
-"id": 1,
-"modified": "2013-11-02T12:24:55.531989",
-"name": "Monster",
-"pokemon": [
-{
-"name": "Ivysaur",
-"resource_uri": "/api/v1/pokemon/2/"
-},
-{
-"name": "Bulbasaur",
-"resource_uri": "/api/v1/pokemon/1/"
+    "created": "2013-11-02T12:24:55.532023",
+    "id": 1,
+    "modified": "2013-11-02T12:24:55.531989",
+    "name": "Monster",
+    "pokemon": [
+        {
+            "name": "Ivysaur",
+            "resource_uri": "/api/v1/pokemon/2/"
+        },
+        {
+            "name": "Bulbasaur",
+            "resource_uri": "/api/v1/pokemon/1/"
+        }
+    ],
+    "resource_uri": "/api/v1/egg/1/"
 }
-],
-"resource_uri": "/api/v1/egg/1/"
-}
-    </pre>
+    </code></pre>
 
     <h4>EggGroup</h4>
 
@@ -708,27 +704,30 @@
     <h3> GET description/</h3>
     <p>Returns a list of descriptions</p>
     <h3> GET description/{id}/ </h3>
-    <pre>
+    <pre><code>
 {
-created: '2013-12-24T17:14:38.281429',
-description: 'A strange seed was planted on its back at birth. The plant sprouts and grows with this POKMON.',
-games: [{
-name: 'red(JPN)',
-resource_uri: '/api/v1/game/1/'
-}, {
-name: 'green(JPN)',
-resource_uri: '/api/v1/game/2/'
-}],
-id: 2,
-modified: '2014-01-18T14:29:53.118541',
-name: 'Bulbasaur_gen_1',
-pokemon: {
-name: 'bulbasaur',
-resource_uri: '/api/v1/pokemon/1/'
-},
-resource_uri: '/api/v1/description/2/'
+    created: '2013-12-24T17:14:38.281429',
+    description: 'A strange seed was planted on its back at birth. The plant sprouts and grows with this POKMON.',
+    games: [
+        {
+            name: 'red(JPN)',
+            resource_uri: '/api/v1/game/1/'
+        },
+        {
+            name: 'green(JPN)',
+            resource_uri: '/api/v1/game/2/'
+        }
+    ],
+    id: 2,
+    modified: '2014-01-18T14:29:53.118541',
+    name: 'Bulbasaur_gen_1',
+    pokemon: {
+        name: 'bulbasaur',
+        resource_uri: '/api/v1/pokemon/1/'
+    },
+    resource_uri: '/api/v1/description/2/'
 }
-    </pre>
+    </code></pre>
 
     <h4>Description</h4>
 
@@ -783,20 +782,20 @@ resource_uri: '/api/v1/description/2/'
     <h3> GET sprite/</h3>
     <p>Returns a list of sprites</p>
     <h3> GET sprite/{id}/ </h3>
-    <pre>
+    <pre><code>
 {
-"created": "2013-11-02T12:34:19.113143",
-"id": 1,
-"image": "/media/img/1383395659.12.png",
-"modified": "2013-11-02T12:34:19.113053",
-"name": "Bulbasaur_blue_red",
-"pokemon": {
-"name": "bulbasaur",
-"resource_uri": "/api/v1/pokemon/1/"
-},
-"resource_uri": "/api/v1/sprite/1/"
+    "created": "2013-11-02T12:34:19.113143",
+    "id": 1,
+    "image": "/media/img/1383395659.12.png",
+    "modified": "2013-11-02T12:34:19.113053",
+    "name": "Bulbasaur_blue_red",
+    "pokemon": {
+        "name": "bulbasaur",
+        "resource_uri": "/api/v1/pokemon/1/"
+    },
+    "resource_uri": "/api/v1/sprite/1/"
 }
-    </pre>
+    </code></pre>
 
     <h4>Sprite</h4>
 
@@ -850,17 +849,17 @@ resource_uri: '/api/v1/description/2/'
     <h3> GET game/</h3>
     <p>Returns a list of games</p>
     <h3> GET game/{id}/ </h3>
-    <pre>
+    <pre><code>
 {
-"created": "2013-11-02T12:11:41.755402",
-"generation": 1,
-"id": 1,
-"modified": "2013-11-02T12:12:47.378286",
-"name": "Pokemon red (JPN)",
-"release_year": 1996,
-"resource_uri": "/api/v1/game/1/"
+    "created": "2013-11-02T12:11:41.755402",
+    "generation": 1,
+    "id": 1,
+    "modified": "2013-11-02T12:12:47.378286",
+    "name": "Pokemon red (JPN)",
+    "release_year": 1996,
+    "resource_uri": "/api/v1/game/1/"
 }
-    </pre>
+    </code></pre>
 
     <h4>Game</h4>
 

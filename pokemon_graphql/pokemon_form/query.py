@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from graphene import relay, Argument
+from graphene import relay, Argument, List
 
 from pokemon_v2 import models
 from ..base import BaseQuery
-from ..pokemon_form.types import PokemonFormConnection, PokemonFormOrder
+from ..pokemon_form.types import PokemonFormConnection, PokemonFormOrdering
 from ..connections import getConnection
 from ..where import Where
 
@@ -14,7 +14,7 @@ class Query(BaseQuery):
         PokemonFormConnection,
         description="A list of different forms some Pokémon can take on.",
         where=Argument(Where),
-        order_by=Argument(PokemonFormOrder)
+        order_by=Argument(List(PokemonFormOrdering))
     )
 
     def resolve_pokemon_forms(self, info, **kwargs):

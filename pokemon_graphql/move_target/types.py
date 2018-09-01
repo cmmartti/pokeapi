@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from graphene import Int, String, Boolean, Field, List, ObjectType, Enum, relay, Argument, InputObjectType, ID
-from graphene import lazy_import
+from graphene import *
+from graphene import relay
 
 from pokemon_v2 import models
 from ..connections import getConnection
@@ -29,7 +29,7 @@ class MoveTarget(ObjectType):
         lazy_import("pokemon_graphql.move.types.MoveConnection"),
         description="A list of moves that that are directed at this target.",
         where=Argument(Where),
-        order_by=Argument(lazy_import("pokemon_graphql.move.types.MoveOrder"))
+        order_by=Argument(List(lazy_import('pokemon_graphql.move.types.MoveOrdering')))
     )
 
     def resolve_names(self, info, **kwargs):

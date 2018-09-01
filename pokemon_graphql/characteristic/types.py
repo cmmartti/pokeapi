@@ -62,24 +62,13 @@ class CharacteristicConnection(BaseConnection, relay.Connection):
         node = Characteristic
 
 
-class CharacteristicOrderField(Enum):
-    """Properties by which characteristic connections can be ordered."""
-    NAME = "name"
-    GENE_MODULO = "gene_mod_5"
-
-    @property
-    def description(self):
-        if self == CharacteristicOrderField.NAME:
-            return "Order by name."
-        if self == CharacteristicOrderField.GENE_MODULO:
-            return "Order by the remainder of the highest stat divided by 5."
-
-
-class CharacteristicOrder(BaseOrder):
-    """Ordering options for characteristic connections."""
-    field = CharacteristicOrderField(
-        description="The field to order edges by.",
-        required=True
+class CharacteristicOrdering(BaseOrder):
+    sort = InputField(
+        Enum('CharacteristicSort', [
+            ("GENE_MODULO", "gene_mod_5"),
+            ("HIGHEST_STAT", "stat"),
+        ]),
+        description="The field to sort by."
     )
 
 

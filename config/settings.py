@@ -48,9 +48,10 @@ MEDIA_URL = '/media/'
 
 STATIC_ROOT = PROJECT_ROOT.child('assets')
 
-STATIC_URL = '/assets/'
+STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
+    os.path.join(PROJECT_ROOT, 'static'),
     # '/pokemon/assets/',
     # 'pokemon_v2/assets/',
 )
@@ -83,9 +84,24 @@ ROOT_URLCONF = 'config.urls'
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-TEMPLATE_DIRS = (
-    PROJECT_ROOT.child('templates'),
-)
+# TEMPLATE_DIRS = (
+#     PROJECT_ROOT.child('templates'),
+# )
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [PROJECT_ROOT.child('templates')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                # 'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                # 'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
 
 DATABASES = {
     'default': {
@@ -135,6 +151,8 @@ INSTALLED_APPS = (
     'markdown_deux',
     'cachalot',
     'graphene_django',
+    'webpack_loader',
+    'menuware',
 ) + CUSTOM_APPS
 
 
@@ -145,10 +163,10 @@ TASTYPIE_DEFAULT_FORMATS = ['json']
 CORS_ORIGIN_ALLOW_ALL = True
 
 CORS_ALLOW_METHODS = (
-    'GET'
+    'GET', 'POST'
 )
 
-CORS_URLS_REGEX = r'^/api/.*$'
+CORS_URLS_REGEX = r'^(/api/|/graphql/|/graphql).*$'
 
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
@@ -206,3 +224,69 @@ GRAPHENE = {
         'pokemon_graphql.middleware.LoaderMiddleware'
     ],
 }
+
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'BUNDLE_DIR_NAME': 'bundles/',
+        'STATS_FILE': os.path.join(PROJECT_ROOT, 'webpack-stats.json'),
+    }
+}
+
+
+MAIN_MENU = [
+    {
+        "name": "Home",
+        "url": "config.views.home",  # reversible
+    },
+    {
+        "name": "About",
+        "url": "config.views.about",  # reversible
+    },
+    {
+        "name": "Explore",
+        "url": "#",
+        "submenu": [
+            {
+                "name": "GraphQL",
+                "url": "/explore/graphql/",
+            },
+            {
+                "name": "RESTful V2",
+                "url": "/explore/v2/",
+            },
+        ],
+    },
+    {
+        "name": "Documentation",
+        "url": "#",
+        "submenu": [
+            {
+                "name": "GraphQL",
+                "url": "/docs/graphql/",
+            },
+            {
+                "name": "RESTful V2",
+                "url": "/docs/v2/",
+            },
+            {
+                "name": "RESTful V1 (deprecated)",
+                "url": "/docs/v1/",
+            },
+        ],
+    },
+]
+
+# DOCS_VERSION_SELECT_MENU = [
+#     {
+#         "name": "GraphQL",
+#         "url": "/docs/graphql/",
+#     },
+#     {
+#         "name": "REST (V2)",
+#         "url": "/docs/v2/",
+#     },
+#     {
+#         "name": "REST (V1) -. deprecated",
+#         "url": "/docs/v1/",
+#     },
+# ]

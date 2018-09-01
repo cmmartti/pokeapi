@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from graphene import Int, String, Boolean, Field, List, ObjectType, Enum, relay, Argument
-from graphene import lazy_import
+from graphene import *
+from graphene import relay
 
 from pokemon_v2 import models
 from ..connections import getConnection, getPage
@@ -29,7 +29,7 @@ class Pokedex(ObjectType):
     pokemon_entries = relay.ConnectionField(
         lambda: PokedexEntryConnection,
         description="A list of Pokémon catalogued in this Pokédex and their indexes.",
-        order_by=Argument(lambda: PokedexEntryOrder)
+        order_by=Argument(List(lambda: PokedexEntryOrdering))
     )
 
 
@@ -73,6 +73,13 @@ class PokedexConnection(BaseConnection, relay.Connection):
         node = Pokedex
 
 
+class PokedexOrdering(BaseOrder):
+    sort = InputField(
+        Enum('PokedexSort', [("IS_MAIN_SERIES", "is_main_series"), ("NAME", "name")]),
+        description="The field to sort by."
+    )
+
+
 class PokedexName(BaseName):
     class Meta:
         interfaces = (RelayNode, )
@@ -92,25 +99,6 @@ class PokedexDescription(BaseDescription):
         return info.context.loaders.pokedexdescription.load(id)
 
 
-class PokedexOrderField(Enum):
-    """Properties by which pokedex connections can be ordered."""
-
-    NAME = "name"
-
-    @property
-    def description(self):
-        if self == PokedexOrderField.NAME:
-            return "Order pokedexes by name."
-
-
-class PokedexOrder(BaseOrder):
-    """Ordering options for pokedex connections."""
-    field = PokedexOrderField(
-        description="The field to order pokedexes by.",
-        required=True
-    )
-
-
 from ..pokemon_species.types import PokemonSpecies
 class PokedexEntryConnection(BaseConnection, relay.Connection):
     class Meta:
@@ -122,20 +110,8 @@ class PokedexEntryConnection(BaseConnection, relay.Connection):
         )
 
 
-class PokedexEntryOrderField(Enum):
-    """Properties by which pokedex entry connections can be ordered."""
-
-    ENTRY_NUMBER = "pokedex_number"
-
-    @property
-    def description(self):
-        if self == PokedexEntryOrderField.ENTRY_NUMBER:
-            return "Order pokedex entries by entry number."
-
-
-class PokedexEntryOrder(BaseOrder):
-    """Ordering options for pokedex entry connections."""
-    field = PokedexEntryOrderField(
-        description="The field to order pokedex entries by.",
-        required=True
+class PokedexEntryOrdering(BaseOrder):
+    sort = InputField(
+        Enum('PokedexEntrySort', [("ENTRY_NUMBER", "pokedex_number")]),
+        description="The field to sort by."
     )

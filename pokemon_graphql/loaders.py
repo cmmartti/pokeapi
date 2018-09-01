@@ -375,11 +375,24 @@ class TranslationsLoader(DataLoader):
 
     def batch_load_fn(self, keys):
         results = get_relations(keys, self.get_query_set, self.id_attr)
-        return Promise.resolve(results)
+        sorted_results = []
+        for (i, result) in enumerate(results):
+
+            # Sort results based on the order in the 'lang' argument, if present
+            def sort_results(translation):
+                args = keys[i].args._asdict()
+                if 'lang' in args:
+                    return args["lang"].index(translation.language.name)
+                return translation.id
+
+            sorted_results.append(sorted(result, key=sort_results))
+
+        return Promise.resolve(sorted_results)
 
     def get_query_set(self, ids, **args):
         q = self.model.objects.filter(**{self.id_attr + "__in": ids})
-        q = add_filters(q, args, language__name="lang")
+        q = q.select_related('language')
+        q = add_filters(q, args, language__name__in="lang")
         return q
 
 
@@ -444,11 +457,25 @@ class ItemSpritesLoader(DataLoader):
 class LanguageNamesLoader(DataLoader):
     def batch_load_fn(self, keys):
         results = get_relations(keys, self.get_query_set, "language_id")
-        return Promise.resolve(results)
+
+        sorted_results = []
+        for (i, result) in enumerate(results):
+
+            # Sort results based on the order in the 'lang' argument, if present
+            def sort_results(lang_name):
+                args = keys[i].args._asdict()
+                if 'lang' in args:
+                    return args["lang"].index(lang_name.local_language.name)
+                return lang_name.id
+
+            sorted_results.append(sorted(result, key=sort_results))
+
+        return Promise.resolve(sorted_results)
 
     def get_query_set(self, ids, **args):
         q = LanguageName.objects.filter(language_id__in=ids)
-        q = add_filters(q, args, local_language__name="lang")
+        q = q.select_related('local_language')
+        q = add_filters(q, args, local_language__name__in="lang")
         return q
 
 

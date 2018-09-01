@@ -22,7 +22,8 @@ def about(request):
 
     average_day = cache.get('average_day')
     if not average_day:
-        average_day = int(round(total_views / ResourceView.objects.count()))
+        count = ResourceView.objects.count()
+        average_day = count if count == 0 else int(round(total_views / count))
         cache.set('average_day', average_day)
 
     alert = cache.get('alert')

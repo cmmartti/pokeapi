@@ -87,27 +87,17 @@ class EncounterConnection(BaseConnection, relay.Connection):
         node = Encounter
 
 
-class EncounterOrderField(Enum):
-    """Properties by which encounter connections can be ordered."""
-    CHANCE = "chance"
-    MAX_LEVEL = "max_level"
-    MIN_LEVEL = "min_level"
-
-    @property
-    def description(self):
-        if self == EncounterOrderField.CHANCE:
-            return "Order encounters by the percent chance that each will occur."
-        if self == EncounterOrderField.MAX_LEVEL:
-            return "Order encounters by the highest level the Pokémon can be encountered at."
-        if self == EncounterOrderField.MIN_LEVEL:
-            return "Order encounters by the lowest level the Pokémon can be encountered at."
-
-
-class EncounterOrder(BaseOrder):
-    """Ordering options for encounter connections."""
-    field = EncounterOrderField(
-        description="The field to order encounters by.",
-        required=True
+class EncounterOrdering(BaseOrder):
+    sort = InputField(
+        Enum('EncounterSort', [
+            ("CHANCE", "chance"),
+            ("LOCATION_AREA", "location_area"),
+            ("MAX_LEVEL", "max_level"),
+            ("MIN_LEVEL", "min_level"),
+            ("POKEMON", "pokemon"),
+            ("VERSION", "version"),
+        ]),
+        description="The field to sort by."
     )
 
 

@@ -95,3 +95,25 @@ class PokemonColorTests(django.test.TestCase, APIData):
             }
         }
         self.assertEqual(executed, expected)
+
+    def test_single(self):
+        pokemon_color = self.setup_pokemon_color_data(name='base pkmn clr trgr')
+        pokemon_color_name = self.setup_pokemon_color_name_data(
+            pokemon_color, name='base pkmn clr name')
+        pokemon_species = self.setup_pokemon_species_data(
+            pokemon_color=pokemon_color, name='pkmn spcs for pkmn clr')
+
+        client = Client(schema)
+        executed = client.execute('''
+            query {
+                pokemonColor(name: "%s") {id}
+            }
+        ''' % pokemon_color.name, **args)
+        expected = {
+            "data": {
+                "pokemonColor": {
+                    "id": get_id("PokemonColor", pokemon_color.id),
+                }
+            }
+        }
+        self.assertEqual(executed, expected)

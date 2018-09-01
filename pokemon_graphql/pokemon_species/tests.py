@@ -135,7 +135,7 @@ class PokemonSpeciesTests(django.test.TestCase, APIData):
         color = pokemon_species.pokemon_color
         shape = pokemon_species.pokemon_shape
         pokemon_species_name = self.setup_pokemon_species_name_data(
-            pokemon_species, name='base pkmn shp name'
+            pokemon_species, name='base pkmn spcs name'
         )
         pokemon_species_form_description = self.setup_pokemon_species_form_description_data(
             pokemon_species, description='frm dscr for pkmn spcs'
@@ -159,7 +159,10 @@ class PokemonSpeciesTests(django.test.TestCase, APIData):
         client = Client(schema)
         executed = client.execute('''
             query {
-                pokemonSpecies(first: 1, where: {name: "%s"}) {
+                pokemonSpecies(
+                    first: 1
+                    where: {name: {query: "%s"}}
+                ) {
                     edges {
                         node {
                             id name
@@ -169,7 +172,10 @@ class PokemonSpeciesTests(django.test.TestCase, APIData):
                             eggGroups {id name}
                             evolutionChain {id}
                             evolvesFromSpecies {id name}
-                            flavorTextEntries {id text}
+                            flavorTextEntries {
+                                id text
+                                version {id name}
+                            }
                             formDescriptions {id text}
                             formsSwitchable genderRate
                             genera {id text}
@@ -191,7 +197,7 @@ class PokemonSpeciesTests(django.test.TestCase, APIData):
                     }
                 }
             }
-        ''' % pokemon_species.name, **args)
+        ''' % pokemon_species_name.name, **args)
         expected = {
             "data": {
                 "pokemonSpecies": {
@@ -234,7 +240,14 @@ class PokemonSpeciesTests(django.test.TestCase, APIData):
                                             "PokemonSpeciesFlavorText",
                                             pokemon_species_flavor_text.id
                                         ),
-                                        "text": pokemon_species_flavor_text.flavor_text
+                                        "text": pokemon_species_flavor_text.flavor_text,
+                                        "version": {
+                                            "id": get_id(
+                                                "Version",
+                                                pokemon_species_flavor_text.version.id
+                                            ),
+                                            "name": pokemon_species_flavor_text.version.name
+                                        }
                                     }
                                 ],
                                 "formDescriptions": [

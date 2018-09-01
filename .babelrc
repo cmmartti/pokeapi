@@ -1,0 +1,11 @@
+
+{
+    "plugins": ["transform-react-jsx", "transform-class-properties"],
+    "presets": [
+        ["env", {
+            "targets": {
+                "browsers": ["cover 99.8%"]
+            }
+        }]
+    ]
+}

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-from graphene import relay, Argument
+from graphene import relay, Argument, List
 
 from pokemon_v2 import models
 from ..base import BaseQuery
 from ..connections import getConnection
-from .types import CharacteristicConnection, CharacteristicOrder
+from .types import CharacteristicConnection, CharacteristicOrdering
 from ..where import Where
 
 
@@ -13,7 +13,7 @@ class Query(BaseQuery):
         CharacteristicConnection,
         description='A list of characteristics (e.g. "Loves to eat, Alert to sounds").',
         where=Argument(Where),
-        order_by=Argument(CharacteristicOrder)
+        order_by=List(CharacteristicOrdering)
     )
 
     def resolve_characteristics(self, info, **kwargs):

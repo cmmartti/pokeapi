@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-from graphene import List, Argument, String, relay
+from graphene import relay, Argument, List
 
 from pokemon_v2 import models
 from ..base import BaseQuery
 from ..connections import getConnection
-from .types import NatureConnection, NatureOrder
+from .types import NatureConnection, NatureOrdering
 from ..where import Where
 
 
@@ -12,8 +12,8 @@ class Query(BaseQuery):
     natures = relay.ConnectionField(
         NatureConnection,
         description="A list of natures that influence how a Pokémon's stats grow.",
-        order_by=Argument(NatureOrder),
-        where=Argument(Where)
+        where=Argument(Where),
+        order_by=Argument(List(NatureOrdering))
     )
 
     def resolve_natures(self, info, **kwargs):

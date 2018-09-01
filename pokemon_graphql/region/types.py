@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from graphene import String, Boolean, Field, List, ObjectType, Enum, relay, Argument
-from graphene import lazy_import
+from graphene import *
+from graphene import relay
 
 from pokemon_v2 import models
 from ..connections import getConnection
@@ -29,7 +29,9 @@ class Region(ObjectType):
         lazy_import('pokemon_graphql.location.types.LocationConnection'),
         description="A list of locations that can be found in this region.",
         where=Argument(Where),
-        order_by=Argument(lazy_import("pokemon_graphql.location.types.LocationOrder"))
+        order_by=Argument(List(
+            lazy_import("pokemon_graphql.location.types.LocationOrdering")
+        ))
     )
     pokedexes = List(
         lazy_import('pokemon_graphql.pokedex.types.Pokedex'),
@@ -74,22 +76,13 @@ class RegionConnection(BaseConnection, relay.Connection):
         node = Region
 
 
-class RegionOrderField(Enum):
-    """Properties by which region connections can be ordered."""
-
-    NAME = "name"
-
-    @property
-    def description(self):
-        if self == RegionOrderField.NAME:
-            return "Order regions by name."
-
-
-class RegionOrder(BaseOrder):
-    """Ordering options for region connections."""
-    field = RegionOrderField(
-        description="The field to order regions by.",
-        required=True
+class RegionOrdering(BaseOrder):
+    sort = InputField(
+        Enum('RegionSort', [
+            ("NAME", "name"),
+            ("MAIN_GENERATION", "generation__id"),
+        ]),
+        description="The field to sort by."
     )
 
 

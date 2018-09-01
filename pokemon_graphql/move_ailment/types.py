@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-from graphene import Int, String, Boolean, Field, List, ObjectType, Enum, relay, Argument, InputObjectType, ID
-from graphene import lazy_import
+from graphene import *
+from graphene import relay
 
 from pokemon_v2 import models
 from ..connections import getConnection
-from ..base import BaseConnection, BaseOrder, BaseName, BaseDescription
+from ..base import BaseName
 from ..loader_key import LoaderKey
 from ..relay_node import RelayNode
 from ..field import TranslationList
@@ -25,7 +25,7 @@ class MoveAilment(ObjectType):
         lazy_import("pokemon_graphql.move.types.MoveConnection"),
         description="A list of moves that cause this ailment.",
         where=Argument(Where),
-        order_by=Argument(lazy_import("pokemon_graphql.move.types.MoveOrder"))
+        order_by=Argument(List(lazy_import('pokemon_graphql.move.types.MoveOrdering')))
     )
 
     def resolve_names(self, info, **kwargs):

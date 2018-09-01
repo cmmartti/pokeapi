@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from graphene import Int, String, Boolean, Field, List, ObjectType, Enum, relay
-from graphene import lazy_import
+from graphene import *
+from graphene import relay
 
 from ..base import BaseConnection, BaseOrder
 from ..loader_key import LoaderKey
@@ -42,22 +42,8 @@ class VersionGroupConnection(BaseConnection, relay.Connection):
         node = VersionGroup
 
 
-class VersionGroupOrderField(Enum):
-    """Properties by which version group connections can be ordered."""
-    ORDER = "order"
-    NAME = "name"
-
-    @property
-    def description(self):
-        if self == VersionGroupOrderField.ORDER:
-            return "Order version groups by standard order."
-        if self == VersionGroupOrderField.NAME:
-            return "Order version groups by name."
-
-
-class VersionGroupOrder(BaseOrder):
-    """Ordering options for version group connections."""
-    field = VersionGroupOrderField(
-        description="The field to order version groups by.",
-        required=True
+class VersionGroupOrdering(BaseOrder):
+    sort = InputField(
+        Enum('VersionGroupSort', [("ORDER", "order"), ("NAME", "name")]),
+        description="The field to sort by."
     )

@@ -22,11 +22,11 @@ class PokemonShape(ObjectType):
         description="The name of this Pokémon shape listed in different languages."
     )
     pokemon_species = relay.ConnectionField(
-        lazy_import("pokemon_graphql.pokemon_species.types.PokemonSpeciesConnection"),
+        lazy_import("pokemon_graphql.pokemon_species.connection.PokemonSpeciesConnection"),
         description="A list of the Pokémon species that have this shape.",
         where=Argument(Where),
-        order_by=Argument(lazy_import(
-            "pokemon_graphql.pokemon_species.types.PokemonSpeciesOrder"
+        order_by=Argument(List(
+            lazy_import("pokemon_graphql.pokemon_species.connection.PokemonSpeciesOrdering")
         ))
     )
 
@@ -35,7 +35,7 @@ class PokemonShape(ObjectType):
         return info.context.loaders.pokemonshape_names.load(key)
 
     def resolve_pokemon_species(self, info, **kwargs):
-        from ..pokemon_species.types import PokemonSpeciesConnection
+        from ..pokemon_species.connection import PokemonSpeciesConnection
 
         q = models.PokemonSpecies.objects.filter(pokemon_shape_id=self.id)
         return getConnection(q, PokemonSpeciesConnection, **kwargs)

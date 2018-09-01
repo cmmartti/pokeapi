@@ -81,7 +81,9 @@ class VersionEncounterDetail(ObjectType):
         lazy_import('pokemon_graphql.encounter.types.EncounterConnection'),
         description='A list of encounters and their specifics.',
         where=Argument(lazy_import('pokemon_graphql.encounter.types.EncounterWhere')),
-        order_by=Argument(lazy_import('pokemon_graphql.encounter.types.EncounterOrder'))
+        order_by=Argument(List(
+            lazy_import('pokemon_graphql.encounter.types.EncounterOrdering')
+        ))
     )
     version_id = None
     version = Field(

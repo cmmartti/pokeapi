@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from graphene import relay, Argument
+from graphene import relay, Argument, List
 
 from pokemon_v2 import models
 from ..base import BaseQuery
-from ..egg_group.types import EggGroupConnection, EggGroupOrder
+from ..egg_group.types import EggGroupConnection, EggGroupOrdering
 from ..connections import getConnection
 from ..where import Where
 
@@ -14,7 +14,7 @@ class Query(BaseQuery):
         EggGroupConnection,
         description="A list of egg groups, categories that determine which Pokémon are able to interbreed.",
         where=Argument(Where),
-        order_by=Argument(EggGroupOrder)
+        order_by=Argument(List(EggGroupOrdering))
     )
 
     def resolve_egg_groups(self, info, **kwargs):

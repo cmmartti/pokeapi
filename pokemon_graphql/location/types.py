@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from graphene import String, Boolean, Field, List, ObjectType, Enum, relay
-from graphene import lazy_import
+from graphene import *
+from graphene import relay
 
 from ..base import BaseConnection, BaseOrder, BaseName, BaseGenerationGameIndex
 from ..loader_key import LoaderKey
@@ -60,22 +60,15 @@ class LocationConnection(BaseConnection, relay.Connection):
         node = Location
 
 
-class LocationOrderField(Enum):
-    """Properties by which location connections can be ordered."""
-    NAME = "name"
-
-    @property
-    def description(self):
-        if self == LocationOrderField.NAME:
-            return "Order locations by name."
-
-
-class LocationOrder(BaseOrder):
-    """Ordering options for location connections."""
-    field = LocationOrderField(
-        description="The field to order locations by.",
-        required=True
+class LocationOrdering(BaseOrder):
+    sort = InputField(
+        Enum('LocationSort', [
+            ("REGION", "region__id"),
+            ("NAME", "name"),
+        ]),
+        description="The field to sort by."
     )
+
 
 
 class LocationName(BaseName):

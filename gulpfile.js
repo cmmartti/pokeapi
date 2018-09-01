@@ -1,109 +1,31 @@
 
-var gulp 		= require('gulp'),
-	plumber     = require('gulp-plumber'),
-	jshint      = require('gulp-jshint'),
-	stylish     = require('jshint-stylish'),
-	concat      = require('gulp-concat'),
-	flatten     = require('gulp-flatten'),
-	browserSync = require('browser-sync').create(),
-	sass        = require('gulp-sass'),
-	nano        = require('gulp-cssnano'),
-	uglify      = require('gulp-uglify');
-
-var client = {
-
-	html: {
-
-		'partials': 'pokemon_v2/client/components/**/views/*.html'
-	},
-
-	scripts: [
-		'pokemon_v2/client/app.js',
-		'pokemon_v2/client/components/**/scripts/*-module.js',
-		'pokemon_v2/client/components/**/scripts/*-routes.js',
-		'pokemon_v2/client/components/**/scripts/*-filters.js',
-		'pokemon_v2/client/components/**/scripts/*-service.js',
-		'pokemon_v2/client/components/**/scripts/*-directive.js',
-		'pokemon_v2/client/components/**/scripts/*-controller.js'	
-	],
-
-	styles   : {
-		
-		src: [
-			'pokemon_v2/client/components/core/styles/core.scss',
-			'pokemon_v2/client/components/core/styles/!(core).scss',
-			'pokemon_v2/client/components/!(core)/styles/*.scss'
-		],
-
-		includes: [
-			'pokemon_v2/client/components/core/styles'
-		]
-	}
-}
-
-var out = {
-
-	all: 'assets/pokemon_v2/**/*.*',
-	scripts: 'assets/pokemon_v2/js',
-	styles: 'assets/pokemon_v2/css',
-	partials: 'assets/pokemon_v2/partials'
-}
+var gulp = require("gulp"); //http://gulpjs.com/
+var util = require("gulp-util"); //https://github.com/gulpjs/gulp-util
+var sass = require("gulp-sass"); //https://www.npmjs.org/package/gulp-sass
+var autoprefixer = require('gulp-autoprefixer'); //https://www.npmjs.org/package/gulp-autoprefixer
+var minifycss = require('gulp-minify-css'); //https://www.npmjs.org/package/gulp-minify-css
+var rename = require('gulp-rename'); //https://www.npmjs.org/package/gulp-rename
+var log = util.log;
 
 
-gulp.task('html', function () {
+var files = {
+	sass: "static/pokemon/scss/**/*.scss"
+};
 
-    return gulp.src(client.html.partials)
-    	.pipe(flatten())
-		.pipe(gulp.dest(out.partials));
+gulp.task("sass", function(){
+	log("Generate CSS files " + (new Date()).toString());
+    gulp.src(files.sass)
+		.pipe(sass({ style: 'expanded' }))
+		.pipe(autoprefixer("last 3 version","safari 5", "ie 8", "ie 9"))
+		.pipe(gulp.dest("static/pokemon/css/"))
+		.pipe(rename({suffix: '.min'}))
+		.pipe(minifycss())
+		.pipe(gulp.dest("static/pokemon/css/"));
 });
 
-
-gulp.task('scripts', function () {
-
-	return gulp.src(client.scripts)
-		.pipe(plumber())
-		.pipe(jshint())
-		.pipe(jshint.reporter(stylish))
-		.pipe(uglify())
-		.pipe(concat('app.min.js'))
-		.pipe(gulp.dest(out.scripts));
+gulp.task("watch", function(){
+    log("Watching SCSS files for modifications");
+    gulp.watch(files.sass, ["sass"]);
 });
 
-
-gulp.task('styles', function () {
-
-	return gulp.src(client.styles.src)
-		.pipe(plumber())
-		.pipe(sass({
-			outputStyle: 'expanded',
-			includePaths: client.styles.includes
-		}))
-		.pipe(nano())
-		.pipe(concat('app.min.css'))
-		.pipe(gulp.dest(out.styles))
-});
-
-
-gulp.task('watch', function () {
-
-	gulp.watch(client.styles.src, ['styles']);
-	gulp.watch(client.html.partials, ['html']);
-	gulp.watch(client.scripts, ['scripts']);
-});
-
-
-gulp.task('sync', function () {
-
-    browserSync.init({
-
-		port       : 3000,
-		files      : out.all,
-		logLevel   : 'info', // info, debug, warn ,silent
-		// middleware : [fallback],
-		proxy      : 'localhost:8000'
-	})
-});
-
-
-gulp.task('default', ['html', 'scripts', 'styles']);
-gulp.task('start', ['default', 'watch', 'sync']);
+gulp.task("default", ["sass"]);

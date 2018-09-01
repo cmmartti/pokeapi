@@ -1,15 +1,10 @@
 # -*- coding: utf-8 -*-
 from graphene import *
-from graphene import relay
-from django.db.models import Prefetch
 
-from pokemon_v2 import models
-from ..connections import getPage
 from ..base import BaseEffect, BaseFlavorText
 from ..loader_key import LoaderKey
 from ..relay_node import RelayNode
 from ..field import TranslationList
-from ..where import Where
 
 
 class ContestEffect(ObjectType):

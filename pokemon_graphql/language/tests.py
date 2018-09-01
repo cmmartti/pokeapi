@@ -57,7 +57,7 @@ class LanguageTests(django.test.TestCase, APIData):
             query {
                 languages(first: 1, where: {name: "base lang"}) {
                     edges {node {
-                            id name official iso639 iso3166
+                            id name isOfficial countryCode languageCode
                             names {id text}
                         }
                     }
@@ -74,9 +74,9 @@ class LanguageTests(django.test.TestCase, APIData):
                             "node": {
                                 "id": get_id("Language", language.id),
                                 "name": language.name,
-                                "official": language.official,
-                                "iso639": language.iso639,
-                                "iso3166": language.iso3166,
+                                "isOfficial": language.official,
+                                "countryCode": language.iso639,
+                                "languageCode": language.iso3166,
                                 "names": [
                                     {
                                         "id": get_id("LanguageName", language_name.id),

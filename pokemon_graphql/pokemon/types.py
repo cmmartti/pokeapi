@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 import json
-from graphene import Int, String, Boolean, Field, List, ObjectType, Enum, relay, Argument
-from graphene import lazy_import
+from graphene import *
+from graphene import relay
 
 from pokemon_v2 import models
 from ..connections import getConnection, getPage
-from ..base import BaseConnection, BaseOrder, BaseVersionGameIndex
+from ..base import BaseVersionGameIndex
 from ..loader_key import LoaderKey
 from ..interfaces import RelayNode, SimpleEdge
 from ..field import TranslationList
-from ..where import Where
 from .id import PokemonHeldItemID
 from .edges import *
 
@@ -163,30 +162,6 @@ class Pokemon(ObjectType):
     @classmethod
     def get_node(cls, info, id):
         return info.context.loaders.pokemon.load(id)
-
-
-class PokemonConnection(BaseConnection, relay.Connection):
-    class Meta:
-        node = Pokemon
-
-
-class PokemonOrderField(Enum):
-    """Properties by which Pokemon connections can be ordered."""
-
-    NAME = "name"
-
-    @property
-    def description(self):
-        if self == PokemonOrderField.NAME:
-            return "Order Pokémon by name."
-
-
-class PokemonOrder(BaseOrder):
-    """Ordering options for Pokemon connections."""
-    field = PokemonOrderField(
-        description="The field to order edges by.",
-        required=True
-    )
 
 
 class PokemonGameIndex(BaseVersionGameIndex):

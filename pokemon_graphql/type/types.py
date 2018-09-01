@@ -39,13 +39,13 @@ class Type(ObjectType):
         lambda: TypePokemonConnection,
         description="A list of details of Pokémon that have this type.",
         # where=Argument(lambda: TypePokemonWhere),
-        order_by=Argument(lambda: TypePokemonOrder)
+        order_by=Argument(List(lambda: TypePokemonOrdering))
     )
     moves = relay.ConnectionField(
         lazy_import("pokemon_graphql.move.types.MoveConnection"),
         description="A list of moves that have this type.",
         where=Argument(Where),
-        order_by=Argument(lazy_import("pokemon_graphql.move.types.MoveOrder"))
+        order_by=Argument(List(lazy_import('pokemon_graphql.move.types.MoveOrdering')))
     )
     no_damage_to = List(
         lambda: Type,
@@ -162,21 +162,10 @@ class TypeConnection(BaseConnection, relay.Connection):
         node = Type
 
 
-class TypeOrderField(Enum):
-    """Properties by which type connections can be ordered."""
-    NAME = "name"
-
-    @property
-    def description(self):
-        if self == TypeOrderField.NAME:
-            return "Order by name."
-
-
-class TypeOrder(BaseOrder):
-    """Ordering options for type connections."""
-    field = TypeOrderField(
-        description="The field to order edges by.",
-        required=True
+class TypeOrdering(BaseOrder):
+    sort = InputField(
+        Enum('TypeSort', [("NAME", "name")]),
+        description="The field to sort by."
     )
 
 
@@ -209,25 +198,12 @@ class TypePokemonConnection(BaseConnection, relay.Connection):
         )
 
 
-class TypePokemonOrderField(Enum):
-    """Properties by which type Pokémon connections can be ordered."""
-    NAME = "name"
-    SLOT = "slot"
-
-    @property
-    def description(self):
-        if self == TypePokemonOrderField.NAME:
-            return "Order by name."
-        elif self == TypePokemonOrderField.SLOT:
-            return "Order by type slot."
-
-
-class TypePokemonOrder(BaseOrder):
-    """Ordering options for type Pokémon connections."""
-    field = TypePokemonOrderField(
-        description="The field to order edges by.",
-        required=True
+class TypePokemonOrdering(BaseOrder):
+    sort = InputField(
+        Enum('TypePokemonSort', [("SLOT", "slot"), ("NAME", "name")]),
+        description="The field to sort by."
     )
+
 
 # class TypePokemonWhere(BaseWhere):
 #     """Filtering options for Type Pokémon connections."""

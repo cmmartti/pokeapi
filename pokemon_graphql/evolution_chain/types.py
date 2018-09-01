@@ -65,23 +65,14 @@ class EvolutionChainConnection(BaseConnection, relay.Connection):
         node = EvolutionChain
 
 
-class EvolutionChainOrderField(Enum):
-    """Properties by which evolution chain connections can be ordered."""
-
-    NAME = "name"
-
-    @property
-    def description(self):
-        if self == EvolutionChainOrderField.NAME:
-            return "Order by name."
-
-
-class EvolutionChainOrder(BaseOrder):
-    """Ordering options for evolution chain connections."""
-    field = EvolutionChainOrderField(
-        description="The field to order edges by.",
-        required=True
+class EvolutionChainOrdering(BaseOrder):
+    sort = InputField(
+        Enum('EvolutionChainSort', [
+            ("BABY_TRIGGER_ITEM", "baby_trigger_item_id"),
+        ]),
+        description="The field to sort by."
     )
+
 
 
 class EvolutionChainWhere(BaseWhere):

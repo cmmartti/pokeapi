@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-from graphene import List, Argument, String, relay
+from graphene import relay, Argument, List
 
 from pokemon_v2 import models
 from ..base import BaseQuery
 from ..connections import getConnection
-from .types import MachineConnection, MachineOrder, MachineWhere
+from .types import MachineConnection, MachineOrdering, MachineWhere
 
 
 class Query(BaseQuery):
@@ -12,8 +12,8 @@ class Query(BaseQuery):
     machines = relay.ConnectionField(
         MachineConnection,
         description="A list of machines that teach moves to Pokémon.",
-        order_by=Argument(MachineOrder),
-        where=Argument(MachineWhere)
+        where=Argument(MachineWhere),
+        order_by=Argument(List(MachineOrdering))
     )
 
     def resolve_machines(self, info, **kwargs):

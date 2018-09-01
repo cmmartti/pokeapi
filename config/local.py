@@ -44,9 +44,8 @@ LOGGING = {
     }
 }
 
-if DEBUG:
-    # Log each db query to the console for debugging
-    MIDDLEWARE_CLASSES = ('config.middleware.QueryDebugMiddleware',) + MIDDLEWARE_CLASSES
+# Log each db query to the console for debugging
+# MIDDLEWARE_CLASSES = ('config.middleware.QueryDebugMiddleware',) + MIDDLEWARE_CLASSES
 
-    # Log the number of queries and the total run time to the console
-    MIDDLEWARE_CLASSES = ('config.middleware.QueryCountDebugMiddleware',) + MIDDLEWARE_CLASSES
+# Log the number of queries and the total run time to the console
+MIDDLEWARE_CLASSES = ('config.middleware.QueryCountDebugMiddleware',) + MIDDLEWARE_CLASSES

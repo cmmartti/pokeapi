@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from graphene import String, Boolean, Field, List, ObjectType, Enum, relay
-from graphene import lazy_import
+from graphene import *
+from graphene import relay
 
 from ..base import BaseConnection, BaseOrder, BaseName
 from ..loader_key import LoaderKey
@@ -51,19 +51,8 @@ class VersionName(BaseName):
         return info.context.loaders.versionname.load(id)
 
 
-class VersionOrderField(Enum):
-    """Properties by which version connections can be ordered."""
-    NAME = "name"
-
-    @property
-    def description(self):
-        if self == VersionOrderField.NAME:
-            return "Order version groups by name."
-
-
-class VersionOrder(BaseOrder):
-    """Ordering options for version connections."""
-    field = VersionOrderField(
-        description="The field to order versions by.",
-        required=True
+class VersionOrdering(BaseOrder):
+    sort = InputField(
+        Enum('VersionSort', [("NAME", "name")]),
+        description="The field to sort by."
     )

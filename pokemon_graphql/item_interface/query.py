@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-from graphene import relay, Argument
+from graphene import relay, Argument, List
 
 from pokemon_v2 import models
 from ..base import BaseQuery
-from .connection import ItemInterfaceConnection, ItemInterfaceOrder, ItemInterfaceWhere, getItemConnection
+from .connection import ItemInterfaceConnection, ItemInterfaceOrdering, ItemInterfaceWhere, getItemConnection
 
 
 class Query(BaseQuery):
     items = relay.ConnectionField(
         ItemInterfaceConnection,
         description="A list of items from the games.",
-        order_by=Argument(ItemInterfaceOrder),
-        where=Argument(ItemInterfaceWhere)
+        where=Argument(ItemInterfaceWhere),
+        order_by=Argument(List(ItemInterfaceOrdering))
     )
 
     def resolve_items(self, info, **kwargs):

@@ -8,7 +8,7 @@ from ..base import BaseConnection, BaseOrder
 from .types import ItemInterface
 from ..item.types import Item
 from ..berry.types import Berry
-from ..where import Where
+from ..where import BaseWhere
 
 
 class ItemInterfaceConnection(BaseConnection, relay.Connection):
@@ -16,26 +16,20 @@ class ItemInterfaceConnection(BaseConnection, relay.Connection):
         node = ItemInterface
 
 
-class ItemOrderField(Enum):
-    """Properties by which item connections can be ordered."""
-
-    NAME = "name"
-
-    @property
-    def description(self):
-        if self == ItemOrderField.NAME:
-            return "Order by name."
-
-
-class ItemInterfaceOrder(BaseOrder):
-    """Ordering options for item connections."""
-    field = ItemOrderField(
-        description="The field to order edges by.",
-        required=True
+class ItemInterfaceOrdering(BaseOrder):
+    sort = InputField(
+        Enum('ItemInterfaceSort', [
+            ("CATEGORY", "item_category__id"),
+            ("COST", "cost"),
+            ("FLING_POWER", "fling_power"),
+            ("FLING_EFFECT", "item_fling_effect__id"),
+            ("NAME", "name")
+        ]),
+        description="The field to sort by."
     )
 
 
-class ItemInterfaceWhere(Where):
+class ItemInterfaceWhere(BaseWhere):
     item_category_id = ID(
         name="categoryID",
         description="The global ID of an item's category."

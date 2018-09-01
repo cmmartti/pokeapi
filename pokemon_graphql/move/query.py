@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-from graphene import relay, Argument
+from graphene import relay, Argument, List
 
 from pokemon_v2 import models
 from ..base import BaseQuery
 from ..connections import getConnection
-from .types import MoveConnection, MoveOrder
+from .types import MoveConnection, MoveOrdering
 from ..where import Where
 
 
@@ -12,8 +12,8 @@ class Query(BaseQuery):
     moves = relay.ConnectionField(
         MoveConnection,
         description="A list of Pokémon moves that exist in the games.",
-        order_by=Argument(MoveOrder),
-        where=Argument(Where)
+        where=Argument(Where),
+        order_by=Argument(List(MoveOrdering))
     )
 
     def resolve_moves(self, info, **kwargs):

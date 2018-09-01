@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from graphene import *
 from graphene import relay
-from django.db.models import Prefetch
 
 from pokemon_v2 import models
 from ..connections import getPage
@@ -22,7 +21,7 @@ class Gender(ObjectType):
         lambda: GenderPokemonSpeciesConnection,
         description="A list of Pokémon species that can be this gender and how likely it is that they will be, as well as if it's required for evolution.",
         where=Argument(lambda: GenderPokemonSpeciesWhere),
-        order_by=Argument(lambda: GenderPokemonSpeciesOrder)
+        order_by=Argument(List(lambda: GenderPokemonSpeciesOrdering))
     )
 
     def resolve_pokemon_species(self, info, **kwargs):
@@ -51,7 +50,6 @@ class Gender(ObjectType):
             edges.append(GenderPokemonSpeciesConnection.Edge(
                 node=entry,
                 rate=entry.gender_rate,
-                required_for_evolution=None,
                 # required_for_evolution=entry.pokemonevolution.gender_id == self.id,
                 cursor=page.get_cursor(entry),
             ))
@@ -78,27 +76,18 @@ class GenderPokemonSpeciesConnection(BaseConnection, relay.Connection):
         rate = Int(
             description="The chance of this Pokémon being female, in eighths; or -1 for genderless."
         )
-        required_for_evolution = Boolean(
-            description="Whether this Pokémon species required this gender in order for a Pokémon to evolve into them."
-        )
+        # required_for_evolution = Boolean(
+        #     description="Whether this Pokémon species required this gender in order for a Pokémon to evolve into them."
+        # )
 
 
-class GenderPokemonSpeciesOrderField(Enum):
-    """Properties by which GenderPokémonSpecies connections can be ordered."""
-
-    NAME = "name"
-
-    @property
-    def description(self):
-        if self == GenderPokemonSpeciesOrderField.NAME:
-            return "Order by name."
-
-
-class GenderPokemonSpeciesOrder(BaseOrder):
-    """Ordering options for gender Pokémon species."""
-    field = GenderPokemonSpeciesOrderField(
-        description="The field to order edges by.",
-        required=True
+class GenderPokemonSpeciesOrdering(BaseOrder):
+    sort = InputField(
+        Enum('GenderPokemonSpeciesSort', [
+            ("RATE", "gender_rate"),
+            # ("REQUIRED_FOR_EVOLUTION", "required_for_evolution"),
+        ]),
+        description="The field to sort by."
     )
 
 

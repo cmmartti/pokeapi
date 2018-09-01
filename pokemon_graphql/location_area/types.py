@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from graphene import String, Int, Boolean, Field, List, ObjectType, Enum, relay
-from graphene import lazy_import
+from graphene import *
+from graphene import relay
 
 from pokemon_v2 import models
 from ..connections import getConnection
@@ -84,22 +84,15 @@ class LocationAreaConnection(BaseConnection, relay.Connection):
         node = LocationArea
 
 
-class LocationAreaOrderField(Enum):
-    """Properties by which location area connections can be ordered."""
-    NAME = "name"
-
-    @property
-    def description(self):
-        if self == LocationAreaOrderField.NAME:
-            return "Order location areas by name."
-
-
-class LocationAreaOrder(BaseOrder):
-    """Ordering options for location area connections."""
-
-    field = LocationAreaOrderField(
-        description="The field to order location areas by.",
-        required=True
+class LocationAreaOrdering(BaseOrder):
+    sort = InputField(
+        Enum('LocationAreaSort', [
+            ("GAME_INDEX", "game_index"),
+            ("LOCATION", "location__id"),
+            ("LOCATION_NAME", "location__name"),
+            ("NAME", "name")
+        ]),
+        description="The field to sort by."
     )
 
 

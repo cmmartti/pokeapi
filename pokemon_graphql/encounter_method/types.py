@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from graphene import String, Int, ObjectType, Enum, relay
-from graphene import lazy_import
+from graphene import *
+from graphene import relay
 
 from ..loader_key import LoaderKey
 from ..base import BaseConnection, BaseOrder, BaseName
@@ -37,25 +37,12 @@ class EncounterMethodConnection(BaseConnection, relay.Connection):
         node = EncounterMethod
 
 
-class EncounterMethodOrderField(Enum):
-    """Properties by which encounter method connections can be ordered."""
-    NAME = "name"
-    ORDER = "order"
-
-    @property
-    def description(self):
-        if self == EncounterMethodOrderField.NAME:
-            return "Order encounter methods by name."
-        if self == EncounterMethodOrderField.ORDER:
-            return "Order encounter methods by the standard order."
-
-
-class EncounterMethodOrder(BaseOrder):
-    """Ordering options for encounter method connections."""
-    field = EncounterMethodOrderField(
-        description="The field to order encounter methods by.",
-        required=True
+class EncounterMethodOrdering(BaseOrder):
+    sort = InputField(
+        Enum('EncounterMethodSort', [("ORDER", "order"), ("NAME", "name")]),
+        description="The field to sort by."
     )
+
 
 
 class EncounterMethodName(BaseName):

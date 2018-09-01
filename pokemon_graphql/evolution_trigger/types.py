@@ -9,7 +9,6 @@ from ..base import BaseName
 from ..loader_key import LoaderKey
 from ..relay_node import RelayNode
 from ..field import TranslationList
-from ..where import Where
 
 
 class EvolutionTrigger(ObjectType):
@@ -23,12 +22,14 @@ class EvolutionTrigger(ObjectType):
         description="The name of this evolution trigger listed in different languages."
     )
     pokemon_species = relay.ConnectionField(
-        lazy_import("pokemon_graphql.pokemon_species.types.PokemonSpeciesConnection"),
+        lazy_import("pokemon_graphql.pokemon_species.connection.PokemonSpeciesConnection"),
         description="A list of pokemon species that result from this evolution trigger.",
-        where=Argument(Where),
-        order_by=Argument(
-            lazy_import("pokemon_graphql.pokemon_species.types.PokemonSpeciesOrder")
-        )
+        where=Argument(
+            lazy_import("pokemon_graphql.pokemon_species.connection.PokemonSpeciesWhere")
+        ),
+        order_by=Argument(List(
+            lazy_import("pokemon_graphql.pokemon_species.connection.PokemonSpeciesOrdering")
+        ))
     )
 
     def resolve_names(self, info, **kwargs):
@@ -36,7 +37,7 @@ class EvolutionTrigger(ObjectType):
         return info.context.loaders.evolutiontrigger_names.load(key)
 
     def resolve_pokemon_species(self, info, **kwargs):
-        from ..pokemon_species.types import PokemonSpeciesConnection
+        from ..pokemon_species.connection import PokemonSpeciesConnection
 
         q = models.PokemonEvolution.objects.filter(evolution_trigger_id=self.id)
         q = q.select_related("evolved_species")

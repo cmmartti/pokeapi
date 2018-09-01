@@ -10,6 +10,12 @@ class LoaderKey(object):
 
     def __init__(self, id, **args):
         self.id = id
+
+        # Convert mutable list args to immutable tuples
+        for key, arg in args.iteritems():
+            if isinstance(arg, list):
+                args[key] = tuple(arg)
+
         Args = namedtuple("Args", args.keys())
         self.args = Args(**args)
 

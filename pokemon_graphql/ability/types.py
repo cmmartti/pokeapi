@@ -3,7 +3,7 @@ from graphene import *
 from graphene import relay
 
 from pokemon_v2 import models
-from ..connections import getConnection, getPage
+from ..connections import getPage
 from ..base import BaseConnection, BaseOrder, BaseName, BaseEffect, BaseVerboseEffect, BaseFlavorText
 from ..loader_key import LoaderKey
 from ..relay_node import RelayNode
@@ -44,8 +44,8 @@ class Ability(ObjectType):
     pokemon = relay.ConnectionField(
         lambda: AbilityPokemonConnection,
         description="A list of Pokémon that could potentially have this ability.",
-        order_by=Argument(lambda: AbilityPokemonOrder),
-        where=Argument(lambda: AbilityPokemonWhere)
+        where=Argument(lambda: AbilityPokemonWhere),
+        order_by=List(lambda: AbilityPokemonOrdering)
     )
 
     def resolve_names(self, info, **kwargs):
@@ -99,21 +99,14 @@ class AbilityConnection(BaseConnection, relay.Connection):
         node = Ability
 
 
-class AbilityOrderField(Enum):
-    """Properties by which ability connections can be ordered."""
-    NAME = "name"
-
-    @property
-    def description(self):
-        if self == AbilityOrderField.NAME:
-            return "Order by name."
-
-
-class AbilityOrder(BaseOrder):
-    """Ordering options for ability connections."""
-    field = AbilityOrderField(
-        description="The field to order edges by.",
-        required=True
+class AbilityOrdering(BaseOrder):
+    sort = InputField(
+        Enum('AbilitySort', [
+            ("IS_MAIN_SERIES", "is_main_series"),
+            ("GENERATION", "generation"),
+            ("NAME", "name")
+        ]),
+        description="The field to sort by."
     )
 
 
@@ -229,12 +222,15 @@ class AbilityPokemonOrderField(Enum):
             return "Order by ability slot."
 
 
-class AbilityPokemonOrder(BaseOrder):
-    """Ordering options for ability Pokémon connections."""
-    field = AbilityPokemonOrderField(
-        description="The field to order edges by.",
-        required=True
+class AbilityPokemonOrdering(BaseOrder):
+    sort = InputField(
+        Enum('AbilityPokemonSort', [
+            ("IS_HIDDEN", "is_hidden"),
+            ("SLOT", "slot"),
+        ]),
+        description="The field to sort by."
     )
+
 
 class AbilityPokemonWhere(Where):
     """Filtering options for Ability Pokémon connections."""

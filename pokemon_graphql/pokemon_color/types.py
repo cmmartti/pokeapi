@@ -8,7 +8,6 @@ from ..base import BaseConnection, BaseOrder, BaseName
 from ..loader_key import LoaderKey
 from ..relay_node import RelayNode
 from ..field import TranslationList
-from ..where import Where
 
 
 class PokemonColor(ObjectType):
@@ -22,11 +21,13 @@ class PokemonColor(ObjectType):
         description="The name of this Pokémon color listed in different languages."
     )
     pokemon_species = relay.ConnectionField(
-        lazy_import("pokemon_graphql.pokemon_species.types.PokemonSpeciesConnection"),
+        lazy_import("pokemon_graphql.pokemon_species.connection.PokemonSpeciesConnection"),
         description="A list of all Pokémon species that have this color.",
-        where=Argument(Where),
-        order_by=Argument(lazy_import(
-            "pokemon_graphql.pokemon_species.types.PokemonSpeciesOrder"
+        where=Argument(
+            lazy_import("pokemon_graphql.pokemon_species.connection.PokemonSpeciesWhere")
+        ),
+        order_by=Argument(List(
+            lazy_import("pokemon_graphql.pokemon_species.connection.PokemonSpeciesOrdering")
         ))
     )
 
@@ -35,7 +36,7 @@ class PokemonColor(ObjectType):
         return info.context.loaders.pokemoncolor_names.load(key)
 
     def resolve_pokemon_species(self, info, **kwargs):
-        from ..pokemon_species.types import PokemonSpeciesConnection
+        from ..pokemon_species.connection import PokemonSpeciesConnection
 
         q = models.PokemonSpecies.objects.filter(pokemon_color_id=self.id)
         return getConnection(q, PokemonSpeciesConnection, **kwargs)

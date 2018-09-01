@@ -32,7 +32,9 @@ class ItemInterface(Interface):
         description="The category of items this item falls into."
     )
     cost = Int(description="The price of this item in stores.")
-    fling_power = Int(description="The power of the move Fling when used with this item.")
+    fling_power = Int(
+        description="The power of the move Fling when used with this item."
+    )
     item_fling_effect_id = None
     fling_effect = Field(
         lazy_import("pokemon_graphql.item_fling_effect.types.ItemFlingEffect"),
@@ -62,7 +64,7 @@ class ItemInterface(Interface):
     machines = List(
         lazy_import("pokemon_graphql.machine.types.Machine"),
         description="A list of the machines related to this item.",
-        deprecation_reason="Do not use this field. It will be moved into a separate ItemInterface implementation for TH/HM machines at some point in the future. If you need it, create an issue on GitHub and it might get fast-tracked."
+        deprecation_reason="Do not use this field in production. It will be moved into a separate ItemInterface implementation for TH/HM machines at some point in the future. If you need it, create an issue on GitHub and it might get fast-tracked."
     )
 
     def resolve_names(self, info, **kwargs):

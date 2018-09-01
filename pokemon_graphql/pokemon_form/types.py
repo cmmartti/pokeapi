@@ -90,25 +90,17 @@ class PokemonFormConnection(BaseConnection, relay.Connection):
         node = PokemonForm
 
 
-class PokemonFormOrderField(Enum):
-    """Properties by which Pokémon form connections can be ordered."""
-
-    NAME = "name"
-    ORDER = "order"
-
-    @property
-    def description(self):
-        if self == PokemonFormOrderField.NAME:
-            return "Order by name."
-        if self == PokemonFormOrderField.ORDER:
-            return "Order by the standard order."
-
-
-class PokemonFormOrder(BaseOrder):
-    """Ordering options for Pokémon form connections."""
-    field = PokemonFormOrderField(
-        description="The field to order edges by.",
-        required=True
+class PokemonFormOrdering(BaseOrder):
+    sort = InputField(
+        Enum('PokemonFormSort', [
+            ("ORDER", "order"),
+            ("FORM_ORDER", "form_order"),
+            ("IS_DEFAULT", "is_default"),
+            ("IS_BATTLE_ONLY", "is_battle_only"),
+            ("IS_MEGA", "is_mega"),
+            ("NAME", "name")
+        ]),
+        description="The field to sort by."
     )
 
 

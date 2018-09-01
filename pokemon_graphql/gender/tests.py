@@ -55,7 +55,7 @@ class GenderTests(django.test.TestCase, APIData):
                     id name
                     pokemonSpecies(first: 1) {
                         edges {
-                            rate requiredForEvolution
+                            rate
                             node {id name}
                         }
                     }
@@ -72,7 +72,7 @@ class GenderTests(django.test.TestCase, APIData):
                             "edges": [
                                 {
                                     "rate": female_pokemon_species.gender_rate,
-                                    "requiredForEvolution": None,
+                                    # "requiredForEvolution": None,
                                     "node": {
                                         "id": get_id(
                                             "PokemonSpecies",

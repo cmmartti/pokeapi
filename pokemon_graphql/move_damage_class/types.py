@@ -29,7 +29,7 @@ class MoveDamageClass(ObjectType):
         lazy_import("pokemon_graphql.move.types.MoveConnection"),
         description="A list of moves that fall into this damage class.",
         where=Argument(Where),
-        order_by=Argument(lazy_import("pokemon_graphql.move.types.MoveOrder"))
+        order_by=Argument(List(lazy_import('pokemon_graphql.move.types.MoveOrdering')))
     )
 
     def resolve_names(self, info, **kwargs):

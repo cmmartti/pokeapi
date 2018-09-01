@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from graphene import *
+from graphene import List, String
 
 from pokemon_v2 import models
 from ..base import BaseQuery

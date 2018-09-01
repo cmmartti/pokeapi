@@ -56,23 +56,12 @@ class MachineConnection(BaseConnection, relay.Connection):
         node = Machine
 
 
-class MachineOrderField(Enum):
-    """Properties by which machine connections can be ordered."""
-
-    NAME = "name"
-
-    @property
-    def description(self):
-        if self == MachineOrderField.NAME:
-            return "Order machines by name."
-
-
-class MachineOrder(BaseOrder):
-    """Ordering options for machine connections."""
-    field = MachineOrderField(
-        description="The field to order machines by.",
-        required=True
+class MachineOrdering(BaseOrder):
+    sort = InputField(
+        Enum('MachineSort', [("ITEM_NAME", "item__name"), ("MOVE_NAME", "move__name")]),
+        description="The field to sort by."
     )
+
 
 
 class MachineWhere(BaseWhere):

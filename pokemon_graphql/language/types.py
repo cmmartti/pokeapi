@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
-from graphene import String, Boolean, Field, List, ObjectType, Enum, relay
-from graphene import lazy_import
+from graphene import *
+from graphene import relay
 
 from ..loader_key import LoaderKey
 from ..base import BaseConnection, BaseOrder
 from ..relay_node import RelayNode
 from ..field import TranslationList
+from ..where import BaseWhere
 
 
 class Language(ObjectType):
@@ -13,13 +14,16 @@ class Language(ObjectType):
 
     name = String(description="The name of this resource.")
     official = Boolean(
+        name="isOfficial",
         description="Whether or not the games are published in this language."
     )
     iso639 = String(
-        description="The two-letter code of the country where this language is spoken. Note that it is not unique."
+        name="countryCode",
+        description="The ISO 639 two-letter code of the country where this language is spoken. Note that it is not unique."
     )
     iso3166 = String(
-        description="The two-letter code of the language. Note that it is not unique."
+        name="languageCode",
+        description="The ISO3166 two-letter code of the language. Note that it is not unique."
     )
     names = TranslationList(
         lambda: LanguageName,
@@ -43,22 +47,20 @@ class LanguageConnection(BaseConnection, relay.Connection):
         node = Language
 
 
-class LanguageOrderField(Enum):
-    """Properties by which language connections can be ordered."""
-    NAME = "name"
-
-    @property
-    def description(self):
-        if self == LanguageOrderField.NAME:
-            return "Order languages by name."
-
-
-class LanguageOrder(BaseOrder):
-    """Ordering options for language connections."""
-    field = LanguageOrderField(
-        description="The field to order languages by.",
-        required=True
+class LanguageOrdering(BaseOrder):
+    sort = InputField(
+        Enum('LanguageSort', [
+            ("IS_OFFICIAL", "official"),
+            ("COUNTRY_CODE", "iso639"),
+            ("LANGUAGE_CODE", "iso3166"),
+            ("NAME", "name")
+        ]),
+        description="The field to sort by."
     )
+
+
+class LanguageWhere(BaseWhere):
+    official = Boolean(name="isOfficial")
 
 
 class LanguageName(ObjectType):

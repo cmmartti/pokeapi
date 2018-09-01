@@ -1,0 +1,183 @@
+{% extends "base_docs.html" %}
+{% load markdown_deux_tags %}
+
+{% block docstitle %}
+
+    <h1>Pokeapi GraphQL Documentation</h1>
+
+{% endblock %}
+
+{% block docsnav %}
+
+    <ul class="side-toc">
+        <li><a href="#info">Information</a></li>
+        <li><a href="#fairuse">Fair Use</a></li>
+        <li><a href="#slack">Slack</a></li>
+        <li class="separator"></li>
+        <li>
+            <a href="#what-is-graphql">What is GraphQL?</a>
+            <ul>
+                <li><a href="#the-type-system">The Type System</a></li>
+                <li><a href="#further-reading">Further Reading</a></li>
+            </ul>
+        </li>
+        <li class="separator"></li>
+        <li><a href="#an-overview-of-types">An Overview of Types</a></li>
+        <li><a href="#pagination">Pagination</a></li>
+        <li><a href="#resource-names">Resource Names</a></li>
+        <li><a href="#errors">Errors</a></li>
+    </ul>
+
+{% endblock %}
+
+{% block docsbody %}
+
+    <h1 id="info">Information</h1>
+    <h2>Please take note when using this API:</h2>
+    <ul>
+        <li>This is a <strong>consumption-only</strong> API - mutations are not available</strong></li>
+        <li><strong>No authentication</strong> is required to access this API. All resources are fully open and available.</li>
+        <li>If you are going to be regularly using the API, we recommend caching data on your service.</li>
+    </ul>
+
+    {% include "fairuse.html" %}
+
+    <p><a href="/graphql">Explore the API</a></p>
+    <p><a href="/graphql">Read the Docs</a></p>
+
+    <h1 id="what-is-graphql">What is GraphQL?</h1>
+
+    <p>If you don't already know, GraphQL is a query language for an API that allows you to ask only for what you need in a single request, and get exactly what you requested. It is a structured alternative to traditional RESTful APIs.
+    </p>
+    <p>In REST, each resource is assigned its own endpoint, and the client must manually follow relationships (like User -> Friends) through hyperlinks. This creates an <code>n+1</code> problem where each relationship requires another request, and it also results in over-fetching of data. However, in GraphQL, all queries are sent to a <a href="/graphql">single endpoint</a>, and relationships can be requested using nested queries. Only the exact fields that are requested are returned, and only a single request is needed.
+    </p>
+
+    <h2 id="the-type-system">The Type System</h2>
+    <p>This is possible because of GraphQL's type system, which consists of scalars and object types. Scalars are things like <code>String</code> and <code>Int</code>, while types model a specific resource like <code>Pokemon</code> or <code>Move</code>. Each type contains a set of fields, each of which can be a scalar or another type.
+    </p>
+    <p>For example, <code>Move</code> is a type that models the skills of Pokémon in battle, and it contains fields like <code>name</code>, <code>accuracy</code>, <code>power</code>, and the <code>generation</code> the move was introduced in. <code>generation</code> is another type called <code>Generation</code>, which describes a generation of games and contains fields of its own.</p>
+
+    <h3>Example Query</h3>
+    <p>A simple query that asks for the total number of moves, and for the first two moves some scalar values and the generation of games it was introduced in looks like this:</p>
+
+    <pre class="precode--noscroll"><code>{
+  moves(first: 2) {
+    totalCount
+    edges {
+      node {
+        name
+        accuracy
+        power
+        generation {name}
+      }
+    }
+  }
+}</code></pre>
+    <p><a href="/explore/graphql?query=">Try this query in the GraphiQL IDE!</a></p>
+
+    </p>
+    <p>(Here, <code>moves</code> is a connection. A detailed description of connections is beyond the scope of this documentation, but as a quick overview, it is a cursor-based pagination model that contains a list of <code>edges</code>, each of which contains a <code>node</code> such as <code>Move</code>. This allows for other data such as <code>totalCount</code> to live in the connection or on an edge. For more info on connections, dig into the GraphQL Relay <a href="https://facebook.github.io/relay/graphql/connections.htm">specification on connections</a>, or read <a href="https://blog.apollographql.com/explaining-graphql-connections-c48b7c3d6976">this Apollo GraphQL article</a>which covers the topic in general.)
+    </p>
+
+    <h3>Example Response</h3>
+    <p>Responses are sent in JSON format.</p>
+    <pre><code>{
+  "data": {
+    "moves": {
+      "totalCount": 737,
+      "edges": [
+        {
+          "node": {
+            "name": "pound",
+            "accuracy": 100,
+            "power": 40,
+            "generation": {
+              "name": "generation-i"
+            }
+          }
+        },
+        {
+          "node": {
+            "name": "karate-chop",
+            "accuracy": 100,
+            "power": 50,
+            "generation": {
+              "name": "generation-i"
+            }
+          }
+        }
+      ]
+    }
+  }
+}</code></pre>
+
+    <h2 id="further-reading">Further Reading</h2>
+    <p>For more about GraphQL, we recommend reading the <a href="https://graphql.org/learn/">GraphQL Learn pages</a>, which cover the details of the query language in detail.
+    </p>
+
+    <h1 id="an-overview-of-types">An overview of types</h1>
+    <p>The types in this GraphQL schema can broadly be categorised under the following categories:</p>
+
+    <table class="types-overview">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Pokémon and Pokémon Species</td>
+                <td>Pokemon are to PokemonSpecies as Jersey and Angus are to cows: variations within a species. An example is the species Gyarados, which commonly exists in a blue form with the same name, but is also found in a rarer red form called Gyarados-Mega. Under this label are also the different properties of Pokemon/Pokemon species, such as Habitat, Form, Nature, etc.
+                </td>
+            </tr>
+            <tr>
+                <td>Items</td>
+                <td>Items encompass different objects that affect gameplay, such as berries, apricorns, or Pokéballs.
+                </td>
+            </tr>
+            <tr>
+                <td>Moves</td>
+                <td>Moves are the skills of Pokémon in battle, and machines are the objects that teach the skills.
+                </td>
+            </tr>
+            <tr>
+                <td>Game-related data</td>
+                <td>This includes the games themselves (known as versions), version groups (highly similar versions), generations, and Pokédexes, which are game-specific encyclopedias of Pokémon species.
+                </td>
+            </tr>
+            <tr>
+                <td>Locations</td>
+                <td>This includes individual locations ("Mt. Coronet"), location areas ("Route 207" in Mt. Coronet), regions ("Sinnoh"), and Pal Park areas.
+                </td>
+            </tr>
+            <tr>
+                <td>Encounters</td>
+                <td>An encounter is a set of conditions that must be met in order to meet a particular Pokémon in a particular game version.
+                </td>
+            </tr>
+            <tr>
+                <td>Evolution Chains</td>
+                <td>These are the family trees of Pokémon; they describe the different paths of Pokémon evolution and the conditions that trigger evolution.
+                </td>
+            </tr>
+            <tr>
+                <td>Other</td>
+                <td>Everything that doesn't fit in the above categories, such as Language.
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h1 id="pagination">Pagination</h1>
+    <p>You can page through a connection using <code>first</code>/<code>last</code> and provide a cursor to <code>before</code>/<code>after</code> to offset the results. Cursors are provided on the <code>edge</code> and in a connection's <code>pageInfo</code>. Cursors, like global IDs, should be treated as opaque strings. Their encoded structure may change at any time, so relying on it is strongly discouraged.
+    </p>
+
+    <h1 id="resource-names">Resource Names</h1>
+    <p>Many resources have <code>name</code> identifiers. They are included as a convenience when assembling queries in GraphiQL. Ideally, the end product should display the translated name text if it is available and not use the <code>name</code> identifier.
+    </p>
+
+    <h1 id="errors">Errors</h1>
+    <p>Errors are ...</p>
+
+{% endblock %}

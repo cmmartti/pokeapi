@@ -27,13 +27,19 @@ class OrderDirection(Enum):
     @property
     def description(self):
         if self == OrderDirection.ASC:
-            return "Specifies an ascending order for a given orderBy argument."
+            return "Ascending order"
         if self == OrderDirection.DESC:
-            return "Specifies a descending order for a given orderBy argument."
+            return "Descending order"
 
 
 class BaseOrder(InputObjectType):
-    direction = OrderDirection(description="The ordering direction.", required=True)
+    direction = OrderDirection(
+        description="The ordering direction.",
+        default_value=OrderDirection.ASC
+    )
+    lang = String(
+        description="For sorts with text translations (such as `NAME`), you **must** specify the language by which to sort (use the `name` attribute on `Language`). This argument will be ignored for non translated sorts."
+    )
 
 
 class BaseTranslationObject(ObjectType):
